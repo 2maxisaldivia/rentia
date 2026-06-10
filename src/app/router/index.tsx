@@ -4,10 +4,11 @@ import LandingPage from '../../features/landing/pages/LandingPage';
 import LoginPage from '../../features/auth/pages/LoginPage';
 import RegisterPage from '../../features/auth/pages/RegisterPage';
 
-import PublicLayout from '../layouts/PublicLayout';
+import PublicLayout from '../../routes/PublicLayout';
 import { ROUTES } from '../../shared/routes';
-import Dashboard from '../../features/auth/pages/Dashboard';
-import PrivateLayout from '../layouts/PrivateLayout';
+import Dashboard from '../../features/dashboard/pages/Dashboard';
+import PrivateLayout from '../../routes/PrivateLayout';
+import NavPanel from '../../layouts/NavPanel';
 
 export const AppRouter = () => {
   return (
@@ -20,7 +21,9 @@ export const AppRouter = () => {
         </Route>
 
         <Route element={<PrivateLayout />}>
-          <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
+          <Route element={<NavPanel />}>
+            <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

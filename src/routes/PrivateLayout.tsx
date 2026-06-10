@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { ROUTES } from '../../shared/routes';
+import { ROUTES } from '../shared/routes';
 
 export default function PrivateLayout() {
   const isAuthenticated = true;

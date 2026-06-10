@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-const GoToLogin = () => {
+const GoToLink = () => {
   return (
     <p className="mt-6 text-center text-sm text-muted-foreground">
       ¿Ya tenés cuenta?{' '}
@@ -11,4 +11,4 @@ const GoToLogin = () => {
   );
 };
 
-export default GoToLogin;
+export default GoToLink;

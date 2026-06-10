@@ -6,6 +6,8 @@ import RegisterPage from '../../features/auth/pages/RegisterPage';
 
 import PublicLayout from '../layouts/PublicLayout';
 import { ROUTES } from '../../shared/routes';
+import Dashboard from '../../features/auth/pages/Dashboard';
+import PrivateLayout from '../layouts/PrivateLayout';
 
 export const AppRouter = () => {
   return (
@@ -15,6 +17,10 @@ export const AppRouter = () => {
           <Route path={ROUTES.HOME} element={<LandingPage />} />
           <Route path={ROUTES.LOGIN} element={<LoginPage />} />
           <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+        </Route>
+
+        <Route element={<PrivateLayout />}>
+          <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
         </Route>
       </Routes>
     </BrowserRouter>

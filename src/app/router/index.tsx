@@ -13,6 +13,7 @@ import Contracts from '../../features/owner/contracts/pages/Contracts';
 import { useUser } from '../../shared/auth/provider/useContextValue';
 import TenantLayout from '../../routes/TenantLayout';
 import ExploreProperties from '../../features/tenant/exploreProperties/pages/ExploreProperties';
+import OwnerPropertyDetail from '../../features/owner/owner-property/pages/OwnerPropertyDetail';
 
 export const AppRouter = () => {
   const { user } = useUser();
@@ -38,6 +39,7 @@ export const AppRouter = () => {
               <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
               <Route path={ROUTES.PROPERTIES} element={<Properties />} />
               <Route path={ROUTES.CONTRACTS} element={<Contracts />} />
+              <Route path={ROUTES.OWNER_PROPERTY_DETAIL} element={<OwnerPropertyDetail />} />
             </Route>
           )}
         </Route>

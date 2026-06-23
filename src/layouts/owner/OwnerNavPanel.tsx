@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Bell, Search, User } from 'lucide-react';
+import { User } from 'lucide-react';
 import { Logo } from '../../shared/components/Logo';
 import { nav } from '../utils/constants';
 
@@ -125,48 +125,6 @@ const OwnerNavPanel = () => {
           <div className="lg:hidden">
             <Logo />
           </div>
-
-          <div
-            className="
-              relative ml-auto
-              hidden max-w-md flex-1
-              sm:block
-            "
-          >
-            <Search
-              className="
-                absolute left-3 top-1/2
-                -translate-y-1/2
-                text-muted-foreground
-              "
-              size={16}
-            />
-
-            <input
-              placeholder="Buscar propiedad, contrato, inquilino..."
-              className="
-                w-full
-                rounded-lg
-                border border-border
-                bg-background
-                py-2 pl-9 pr-3
-                text-sm
-                outline-none
-                focus:ring-2
-                focus:ring-primary
-              "
-            />
-          </div>
-
-          <button
-            className="
-              rounded-lg p-2
-              transition-colors
-              hover:bg-sidebar-accent
-            "
-          >
-            <Bell size={18} className="text-muted-foreground" />
-          </button>
 
           <button
             className="

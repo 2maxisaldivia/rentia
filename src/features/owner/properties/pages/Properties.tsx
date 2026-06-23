@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Filter, MapPin, Search } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 
 import PageHeader from '../../dashboard/pages/components/PageHeader';
 import StatusPill from '../../dashboard/pages/components/StatusPill';
@@ -29,54 +29,6 @@ const Properties = () => {
           </button>
         }
       />
-
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row">
-        <div className="relative flex-1">
-          <Search
-            className="
-              absolute left-3 top-1/2
-              -translate-y-1/2
-              text-muted-foreground
-            "
-            size={16}
-          />
-
-          <input
-            placeholder="Buscar propiedad, contrato, inquilino..."
-            className="
-              w-full
-              rounded-lg
-              border border-border
-              bg-background
-              py-2 pl-9 pr-3
-              text-sm
-              outline-none
-              focus:ring-2
-              focus:ring-primary
-            "
-          />
-        </div>
-
-        <button
-          className="
-            flex
-            items-center
-            gap-2
-            rounded-lg
-            border border-border
-            bg-background
-            px-4
-            py-2
-            text-sm
-            font-medium
-            transition
-            hover:bg-accent
-          "
-        >
-          <Filter className="h-4 w-4" />
-          Filtros
-        </button>
-      </div>
 
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {properties.map((p) => (

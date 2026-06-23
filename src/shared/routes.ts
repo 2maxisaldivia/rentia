@@ -6,4 +6,5 @@ export const ROUTES = {
   PROPERTIES: '/properties',
   CONTRACTS: '/contracts',
   EXPLORE_PROPERTIES: '/explore',
+  OWNER_PROPERTY_DETAIL: '/properties/:id',
 };

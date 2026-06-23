@@ -27,7 +27,7 @@ const FooterSection = () => {
               </a>
             </li>
             <li>
-              <Link to={ROUTES.DASHBOARD} className="hover:text-foreground">
+              <Link to={ROUTES.OWNER_DASHBOARD} className="hover:text-foreground">
                 Dashboard
               </Link>
             </li>

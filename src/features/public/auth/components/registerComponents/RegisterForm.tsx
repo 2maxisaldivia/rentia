@@ -1,14 +1,41 @@
 import { ArrowRight } from 'lucide-react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { registerUser } from '../../../../../services/auth.service';
+import { createUserProfile } from '../../../../../services/user.service';
+import { ROUTES } from '../../../../../shared/routes';
 
 const RegisterForm = () => {
   const navigate = useNavigate();
+
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const [role, setRole] = useState<'owner' | 'tenant'>('tenant');
   return (
     <form
       className="mt-8 space-y-4"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
-        navigate('/dashboard');
+
+        try {
+          const firebaseUser = await registerUser(email, password);
+
+          await createUserProfile({
+            id: firebaseUser.uid,
+            firstName,
+            lastName,
+            email,
+            role,
+            createdAt: new Date(),
+          });
+
+          navigate(role === 'owner' ? `${ROUTES.OWNER_DASHBOARD}` : `${ROUTES.TENANT_EXPLORE}`);
+        } catch (error) {
+          console.error(error);
+        }
       }}
     >
       <div className="grid grid-cols-2 gap-3">
@@ -19,6 +46,8 @@ const RegisterForm = () => {
 
           <input
             id="name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
             required
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           />
@@ -31,6 +60,8 @@ const RegisterForm = () => {
 
           <input
             id="last"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
             required
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           />
@@ -45,6 +76,8 @@ const RegisterForm = () => {
         <input
           id="email"
           type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
           className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
         />
@@ -58,9 +91,34 @@ const RegisterForm = () => {
         <input
           id="pass"
           type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           required
           className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
         />
+      </div>
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Tipo de cuenta</label>
+
+        <select
+          value={role}
+          onChange={(e) => setRole(e.target.value as 'owner' | 'tenant')}
+          className="
+      w-full
+      rounded-md
+      border border-input
+      bg-background
+      px-3 py-2
+      text-sm
+      focus:outline-none
+      focus:ring-2
+      focus:ring-ring
+    "
+        >
+          <option value="tenant">Inquilino</option>
+
+          <option value="owner">Propietario</option>
+        </select>
       </div>
 
       <button

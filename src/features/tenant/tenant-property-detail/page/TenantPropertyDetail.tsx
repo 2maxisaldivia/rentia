@@ -19,7 +19,7 @@ const TenantPropertyDetail = () => {
   return (
     <>
       <Link
-        to={ROUTES.EXPLORE_PROPERTIES}
+        to={ROUTES.TENANT_EXPLORE}
         className="
           inline-flex
           items-center

@@ -30,7 +30,7 @@ const Dashboard = () => {
             </button>
 
             <Link
-              to={ROUTES.PROPERTIES}
+              to={ROUTES.OWNER_PROPERTIES}
               className="
           flex items-center gap-2
           rounded-lg

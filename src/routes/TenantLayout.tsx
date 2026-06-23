@@ -1,9 +1,9 @@
-import TenantNavPanel from '../layouts/tenant/TenantNavPanel';
+import NavPanel from '../layouts/NavPanel';
 
 export default function TenantLayout() {
   return (
     <>
-      <TenantNavPanel />
+      <NavPanel />
     </>
   );
 }

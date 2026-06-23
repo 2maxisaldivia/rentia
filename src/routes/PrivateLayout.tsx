@@ -1,10 +1,12 @@
 import { Navigate, Outlet } from 'react-router-dom';
+
 import { ROUTES } from '../shared/routes';
+import { useUser } from '../shared/auth/provider/useContextValue';
 
 export default function PrivateLayout() {
-  const isAuthenticated = true;
+  const { user } = useUser();
 
-  if (!isAuthenticated) {
+  if (!user) {
     return <Navigate to={ROUTES.LOGIN} replace />;
   }
 

@@ -1,4 +1,4 @@
-import NavPanel from '../layouts/owner/OwnerNavPanel';
+import NavPanel from '../layouts/NavPanel';
 
 export default function OwnerLayout() {
   return (

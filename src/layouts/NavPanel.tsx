@@ -1,11 +1,16 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { User } from 'lucide-react';
-import { Logo } from '../../shared/components/Logo';
-import { ownerNav } from '../utils/constants';
+import { LogOut, User } from 'lucide-react';
+import { Logo } from '../shared/components/Logo';
+import { ownerNav, tenantNav } from './utils/constants';
+import { logoutUser } from '../services/auth.service';
+import { useUser } from '../shared/auth/provider/useContextValue';
 
-const OwnerNavPanel = () => {
+const NavPanel = () => {
   const { pathname } = useLocation();
+  const { user } = useUser();
 
+  const navItems = user?.role === 'owner' ? ownerNav : tenantNav;
+  const ES_ROLE = user?.role === 'owner' ? 'Propietario' : 'Inquilino';
   return (
     <div className="min-h-screen bg-background">
       <aside
@@ -26,9 +31,10 @@ const OwnerNavPanel = () => {
         {/* Menu */}
 
         <nav className="flex-1 space-y-1 px-3">
-          {ownerNav.map((item) => {
+          {navItems.map((item) => {
             const active =
-              pathname === item.to || (item.to !== '/dashboard' && pathname.startsWith(item.to));
+              pathname === item.to ||
+              (item.to !== '/owner/dashboard' && pathname.startsWith(item.to));
 
             return (
               <Link
@@ -71,38 +77,64 @@ const OwnerNavPanel = () => {
 
         {/* Footer sidebar */}
 
-        <div className="border-t border-border">
+        <div className="border-t border-border pt-3">
           {/* User */}
 
           <div
             className="
-              mx-3 mb-3
-              flex items-center gap-3
-              rounded-xl
-              bg-sidebar-accent
-              px-3 py-3
-            "
+      mx-3 mb-3
+      flex items-center gap-3
+      rounded-xl
+      bg-sidebar-accent
+      px-3 py-3
+    "
           >
             <div
               className="
-                flex h-8 w-8
-                items-center justify-center
-                rounded-full
-                bg-primary
-                text-xs
-                font-medium
-                text-primary-foreground
-              "
+        flex h-8 w-8
+        items-center justify-center
+        rounded-full
+        bg-primary
+        text-xs
+        font-medium
+        text-primary-foreground
+      "
             >
-              LM
+              {user?.firstName[0] + user?.lastName[0]}
             </div>
 
             <div>
-              <p className="text-sm font-medium">Lucía Méndez</p>
+              <p className="text-sm font-medium">
+                {user?.firstName} {user?.lastName}
+              </p>
 
-              <p className="text-xs text-muted-foreground">Propietaria</p>
+              <p className="text-xs text-muted-foreground">{ES_ROLE}</p>
             </div>
           </div>
+
+          {/* Logout */}
+
+          <button
+            onClick={async () => {
+              await logoutUser();
+            }}
+            className="
+      mx-3 mb-3
+      flex w-[calc(100%-1.5rem)]
+      items-center gap-3
+      rounded-lg
+      px-3 py-2
+      text-sm
+      font-medium
+      text-muted-foreground
+      transition
+      hover:bg-sidebar-accent
+      hover:text-foreground
+    "
+          >
+            <LogOut className="h-4 w-4" />
+            Cerrar sesión
+          </button>
         </div>
       </aside>
 
@@ -152,4 +184,4 @@ const OwnerNavPanel = () => {
   );
 };
 
-export default OwnerNavPanel;
+export default NavPanel;

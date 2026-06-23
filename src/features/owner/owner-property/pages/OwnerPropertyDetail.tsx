@@ -16,7 +16,7 @@ const OwnerPropertyDetail = () => {
   return (
     <>
       <Link
-        to={ROUTES.PROPERTIES}
+        to={ROUTES.OWNER_PROPERTIES}
         className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" /> Volver a propiedades

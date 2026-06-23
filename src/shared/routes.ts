@@ -2,11 +2,13 @@ export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
   REGISTER: '/register',
-  DASHBOARD: '/dashboard',
-  PROPERTIES: '/properties',
-  CONTRACTS: '/contracts',
-  TENANT_CONTRACTS: '/my-contracts',
-  EXPLORE_PROPERTIES: '/explore',
-  OWNER_PROPERTY_DETAIL: '/properties/:id',
-  TENANT_PROPERTY_DETAIL: '/properties-available/:id',
+
+  OWNER_DASHBOARD: '/owner/dashboard',
+  OWNER_PROPERTIES: '/owner/properties',
+  OWNER_CONTRACTS: '/owner/contracts',
+  OWNER_PROPERTY_DETAIL: '/owner/properties/:id',
+
+  TENANT_EXPLORE: '/tenant/explore',
+  TENANT_CONTRACTS: '/tenant/contracts',
+  TENANT_PROPERTY_DETAIL: '/tenant/properties/:id',
 };

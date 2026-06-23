@@ -21,7 +21,7 @@ export default function Header() {
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-3">
             <Link
-              to="/properties"
+              to={ROUTES.LOGIN}
               className="rounded-lg px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground"
             >
               Buscar alquiler
@@ -34,7 +34,7 @@ export default function Header() {
             </Link>
 
             <Link
-              to="/register"
+              to={ROUTES.REGISTER}
               className="rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground hover:opacity-90"
             >
               Publicar propiedad

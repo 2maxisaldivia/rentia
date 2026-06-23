@@ -1,13 +1,16 @@
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../../../../shared/auth/provider/useContextValue';
+import { ROUTES } from '../../../../../shared/routes';
 
 const LoginForm = ({ handleRecoveryPass }: { handleRecoveryPass: () => void }) => {
+  const { user } = useUser();
   const navigate = useNavigate();
   return (
     <form
       className="mt-8 space-y-4"
       onSubmit={(e) => {
         e.preventDefault();
-        navigate('/dashboard');
+        navigate(user.role === 'owner' ? ROUTES.DASHBOARD : ROUTES.EXPLORE_PROPERTIES);
       }}
     >
       {/* Email */}

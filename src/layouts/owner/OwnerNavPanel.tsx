@@ -1,9 +1,9 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Bell, Search, User } from 'lucide-react';
-import { Logo } from '../shared/components/Logo';
-import { nav } from './utils/constants';
+import { Logo } from '../../shared/components/Logo';
+import { nav } from '../utils/constants';
 
-const NavPanel = () => {
+const OwnerNavPanel = () => {
   const { pathname } = useLocation();
 
   return (
@@ -194,4 +194,4 @@ const NavPanel = () => {
   );
 };
 
-export default NavPanel;
+export default OwnerNavPanel;

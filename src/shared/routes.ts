@@ -5,4 +5,5 @@ export const ROUTES = {
   DASHBOARD: '/dashboard',
   PROPERTIES: '/properties',
   CONTRACTS: '/contracts',
+  EXPLORE_PROPERTIES: '/explore',
 };

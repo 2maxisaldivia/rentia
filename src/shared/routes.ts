@@ -5,6 +5,7 @@ export const ROUTES = {
 
   OWNER_DASHBOARD: '/owner/dashboard',
   OWNER_PROPERTIES: '/owner/properties',
+  OWNER_PROPERTY_CREATE: '/owner/properties/new',
   OWNER_CONTRACTS: '/owner/contracts',
   OWNER_PROPERTY_DETAIL: '/owner/properties/:id',
 

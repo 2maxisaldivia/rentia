@@ -147,7 +147,7 @@ const Dashboard = () => {
         description="Acá tenés un resumen de tus alquileres."
         actions={
           <Link
-            to={ROUTES.OWNER_PROPERTIES}
+            to={ROUTES.OWNER_PROPERTY_CREATE}
             className="
               flex
               items-center

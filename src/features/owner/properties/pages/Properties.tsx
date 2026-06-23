@@ -6,6 +6,7 @@ import PageHeader from '../../dashboard/pages/components/PageHeader';
 import StatusPill from '../../dashboard/pages/components/StatusPill';
 import { useUser } from '../../../../shared/auth/provider/useContextValue';
 import { getOwnerProperties, type Property } from '../../../../services/property.service';
+import { ROUTES } from '../../../../shared/routes';
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat('es-AR', {
@@ -45,9 +46,22 @@ const Properties = () => {
         title="Propiedades"
         description="Gestioná tu portfolio y agregá nuevas unidades."
         actions={
-          <button className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90">
+          <Link
+            to={ROUTES.OWNER_PROPERTY_CREATE}
+            className="
+      rounded-md
+      bg-primary
+      px-4
+      py-2
+      text-sm
+      font-medium
+      text-primary-foreground
+      transition
+      hover:opacity-90
+    "
+          >
             Agregar propiedad
-          </button>
+          </Link>
         }
       />
 

@@ -1,4 +1,5 @@
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
+
 import { db } from '../firebase/firestore';
 
 export type PropertyStatus = 'available' | 'rented';
@@ -17,6 +18,17 @@ export type Property = {
   images?: string[];
 };
 
+type CreatePropertyInput = {
+  title: string;
+  type: string;
+  description: string;
+  price: number;
+  ownerId: string;
+  location: string;
+  address: string;
+  images: string[];
+};
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mapProperty = (doc: any): Property => {
   const data = doc.data();
@@ -33,6 +45,38 @@ const mapProperty = (doc: any): Property => {
     location: data.location,
     address: data.address,
     images: data.images ?? [],
+  };
+};
+
+export const createProperty = async ({
+  title,
+  type,
+  description,
+  price,
+  ownerId,
+  location,
+  address,
+  images,
+}: CreatePropertyInput): Promise<Property> => {
+  const propertyData: Omit<Property, 'id'> = {
+    title,
+    type,
+    description,
+    price,
+    ownerId,
+    location,
+    address,
+    images,
+
+    status: 'available',
+    tenantId: null,
+  };
+
+  const propertyRef = await addDoc(collection(db, 'properties'), propertyData);
+
+  return {
+    id: propertyRef.id,
+    ...propertyData,
   };
 };
 

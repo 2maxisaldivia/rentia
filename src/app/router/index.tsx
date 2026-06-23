@@ -20,6 +20,8 @@ import ExploreProperties from '../../features/tenant/exploreProperties/pages/Exp
 import TenantPropertyDetail from '../../features/tenant/tenant-property-detail/page/TenantPropertyDetail';
 import TenantContracts from '../../features/tenant/tenant-contracts/page/TenantContracts';
 import TenantLayout from '../../routes/TenantLayout';
+import CreateProperty from '../../features/owner/properties/pages/CreateProperty';
+
 export const AppRouter = () => {
   return (
     <BrowserRouter>
@@ -43,6 +45,7 @@ export const AppRouter = () => {
             <Route element={<OwnerLayout />}>
               <Route path={ROUTES.OWNER_DASHBOARD} element={<Dashboard />} />
               <Route path={ROUTES.OWNER_PROPERTIES} element={<Properties />} />
+              <Route path={ROUTES.OWNER_PROPERTY_CREATE} element={<CreateProperty />} />
               <Route path={ROUTES.OWNER_CONTRACTS} element={<Contracts />} />
               <Route path={ROUTES.OWNER_PROPERTY_DETAIL} element={<OwnerPropertyDetail />} />
             </Route>

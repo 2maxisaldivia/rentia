@@ -1,16 +1,16 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import LandingPage from '../../features/landing/pages/LandingPage';
-import LoginPage from '../../features/auth/pages/LoginPage';
-import RegisterPage from '../../features/auth/pages/RegisterPage';
+import LandingPage from '../../features/public/landing/pages/LandingPage';
 
 import PublicLayout from '../../routes/PublicLayout';
 import { ROUTES } from '../../shared/routes';
-import Dashboard from '../../features/dashboard/pages/Dashboard';
+import Dashboard from '../../features/owner/dashboard/pages/Dashboard';
 import PrivateLayout from '../../routes/PrivateLayout';
 import NavPanel from '../../layouts/NavPanel';
-import Properties from '../../features/properties/pages/Properties';
-import Contracts from '../../features/contracts/pages/Contracts';
+import Properties from '../../features/owner/properties/pages/Properties';
+import LoginPage from '../../features/public/auth/pages/LoginPage';
+import Contracts from '../../features/owner/contracts/pages/Contracts';
+import RegisterPage from '../../features/public/auth/pages/RegisterPage';
 
 export const AppRouter = () => {
   return (

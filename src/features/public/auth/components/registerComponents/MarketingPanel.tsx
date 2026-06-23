@@ -1,5 +1,5 @@
 import { Check } from 'lucide-react';
-import { Logo } from '../../../../shared/components/Logo';
+import { Logo } from '../../../../../shared/components/Logo';
 
 const MarketingPanel = () => {
   return (

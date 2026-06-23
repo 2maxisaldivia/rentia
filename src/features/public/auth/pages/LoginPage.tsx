@@ -1,4 +1,3 @@
-import { Logo } from '../../../shared/components/Logo';
 import { useState } from 'react';
 import CurrentYear from '../components/loginComponents/CurrentYear';
 import LoginTitleSection from '../components/loginComponents/LoginTitleSection';
@@ -7,6 +6,7 @@ import GoToRegister from '../components/loginComponents/GoToRegister';
 import RecoveryPassTitleSection from '../components/loginComponents/RecoveryPassTitleSection';
 import RecoveryPassForm from '../components/loginComponents/RecoveryPassForm';
 import BrandPanel from '../components/loginComponents/BrandPanel';
+import { Logo } from '../../../../shared/components/Logo';
 
 const LoginPage = () => {
   const [mode, setMode] = useState<'login' | 'forgot'>('login');

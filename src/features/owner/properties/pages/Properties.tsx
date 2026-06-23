@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Filter, MapPin, Search } from 'lucide-react';
+
 import PageHeader from '../../dashboard/pages/components/PageHeader';
 import StatusPill from '../../dashboard/pages/components/StatusPill';
 import { properties } from '../utils/constants';
@@ -8,21 +9,21 @@ const Properties = () => {
   return (
     <>
       <PageHeader
-        title="Propiedades"
-        description="Gestioná tu portfolio y agregá nuevas unidades."
+        title={'Propiedades'}
+        description={'Gestioná tu portfolio y agregá nuevas unidades.'}
         actions={
           <button
             className="
-              rounded-md
-              bg-primary
-              px-4
-              py-2
-              text-sm
-              font-medium
-              text-primary-foreground
-              transition
-              hover:opacity-90
-            "
+                rounded-md
+                bg-primary
+                px-4
+                py-2
+                text-sm
+                font-medium
+                text-primary-foreground
+                transition
+                hover:opacity-90
+              "
           >
             Agregar propiedad
           </button>
@@ -94,7 +95,14 @@ const Properties = () => {
               hover:shadow-card
             "
           >
-            <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
+            <div
+              className="
+              relative
+              aspect-[4/3]
+              overflow-hidden
+              bg-secondary
+            "
+            >
               <img
                 src={p.img}
                 alt={p.title}

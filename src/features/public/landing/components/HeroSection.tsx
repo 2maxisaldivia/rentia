@@ -1,6 +1,7 @@
 import { ArrowRight, Check, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import heroImg from '../../../assets/hero.png';
+// import heroImg from '../../../assets/hero.png';
+import heroImg from '../../../../assets/hero.png';
 
 const HeroSection = () => {
   return (

@@ -6,6 +6,7 @@ export const properties = [
     price: '$ 320.000',
     status: 'alquilada',
     tone: 'success' as const,
+    ownerId: 'owner-1',
     img: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800',
   },
   {
@@ -15,6 +16,7 @@ export const properties = [
     price: '$ 215.000',
     status: 'alquilada',
     tone: 'success' as const,
+    ownerId: 'owner-1',
     img: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800',
   },
   {
@@ -24,6 +26,7 @@ export const properties = [
     price: '$ 410.000',
     status: 'mantenimiento',
     tone: 'warning' as const,
+    ownerId: 'owner-1',
     img: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800',
   },
   {
@@ -33,6 +36,7 @@ export const properties = [
     price: '$ 285.000',
     status: 'disponible',
     tone: 'primary' as const,
+    ownerId: 'owner-1',
     img: 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=800',
   },
   {
@@ -42,6 +46,7 @@ export const properties = [
     price: '$ 520.000',
     status: 'disponible',
     tone: 'primary' as const,
+    ownerId: 'owner-1',
     img: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800',
   },
   {
@@ -51,6 +56,7 @@ export const properties = [
     price: '$ 480.000',
     status: 'alquilada',
     tone: 'success' as const,
+    ownerId: 'owner-1',
     img: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800',
   },
 ];

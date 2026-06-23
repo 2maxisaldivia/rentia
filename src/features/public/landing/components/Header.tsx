@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Logo } from '../../../shared/components/Logo';
-import { ROUTES } from '../../../shared/routes';
+import { Logo } from '../../../../shared/components/Logo';
+import { ROUTES } from '../../../../shared/routes';
 
 export default function Header() {
   return (
@@ -20,6 +20,12 @@ export default function Header() {
         </nav>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-3">
+            <Link
+              to="/properties"
+              className="rounded-lg px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground"
+            >
+              Buscar alquiler
+            </Link>
             <Link
               to={ROUTES.LOGIN}
               className="rounded-lg px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground"

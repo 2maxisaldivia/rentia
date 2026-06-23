@@ -1,7 +1,7 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { User } from 'lucide-react';
 import { Logo } from '../../shared/components/Logo';
-import { nav } from '../utils/constants';
+import { ownerNav } from '../utils/constants';
 
 const OwnerNavPanel = () => {
   const { pathname } = useLocation();
@@ -26,7 +26,7 @@ const OwnerNavPanel = () => {
         {/* Menu */}
 
         <nav className="flex-1 space-y-1 px-3">
-          {nav.map((item) => {
+          {ownerNav.map((item) => {
             const active =
               pathname === item.to || (item.to !== '/dashboard' && pathname.startsWith(item.to));
 

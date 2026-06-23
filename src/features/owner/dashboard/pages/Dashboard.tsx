@@ -6,6 +6,7 @@ import StatsSection from './components/StatsSection';
 import Incomes from './components/IncomesSection';
 import UpcomingSection from './components/UpcomingSection';
 import Activity from './components/Activity';
+import { ROUTES } from '../../../../shared/routes';
 
 const Dashboard = () => {
   return (
@@ -29,7 +30,7 @@ const Dashboard = () => {
             </button>
 
             <Link
-              to="/properties"
+              to={ROUTES.PROPERTIES}
               className="
           flex items-center gap-2
           rounded-lg

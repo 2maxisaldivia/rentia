@@ -1,33 +1,14 @@
-import { Download, FileText, Plus } from 'lucide-react';
-import StatusPill from '../../dashboard/pages/components/StatusPill';
-import PageHeader from '../../dashboard/pages/components/PageHeader';
-import { ownerRows } from '../utils/constants';
+import { Download, FileText } from 'lucide-react';
+import PageHeader from '../../../owner/dashboard/pages/components/PageHeader';
+import StatusPill from '../../../owner/dashboard/pages/components/StatusPill';
+import { tenantRows } from '../../../owner/contracts/utils/constants';
 
-const Contracts = () => {
+const TenantContracts = () => {
   return (
     <>
       <PageHeader
         title="Contratos"
         description="Gestioná altas, vencimientos y descargás contratos firmados."
-        actions={
-          <button
-            className="
-            flex
-          rounded-md
-          bg-primary
-          px-4
-          py-2
-          text-sm
-          font-medium
-          text-primary-foreground
-          transition
-          hover:opacity-90
-        "
-          >
-            <Plus className="h-4 w-4 mr-1.5 mt-0.5" />
-            Nuevo contrato
-          </button>
-        }
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -38,7 +19,7 @@ const Contracts = () => {
                 <tr>
                   <th className="px-5 py-3 text-left">Contrato</th>
                   <th className="px-5 py-3 text-left">Propiedad</th>
-                  <th className="px-5 py-3 text-left">Inquilino</th>
+                  <th className="px-5 py-3 text-left">Propietario</th>
                   <th className="px-5 py-3 text-left">Vigencia</th>
                   <th className="px-5 py-3 text-left">Monto</th>
                   <th className="px-5 py-3 text-left">Estado</th>
@@ -47,13 +28,13 @@ const Contracts = () => {
               </thead>
 
               <tbody className="divide-y divide-border">
-                {ownerRows.map((r) => (
+                {tenantRows.map((r) => (
                   <tr key={r.id} className="hover:bg-secondary/30">
                     <td className="px-5 py-4 font-medium">{r.id}</td>
 
                     <td className="px-5 py-4">{r.prop}</td>
 
-                    <td className="px-5 py-4">{r.tenant}</td>
+                    <td className="px-5 py-4">{r.owner}</td>
 
                     <td className="px-5 py-4 text-muted-foreground">
                       {r.start} → {r.end}
@@ -178,4 +159,4 @@ const Contracts = () => {
   );
 };
 
-export default Contracts;
+export default TenantContracts;

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { ROUTES } from '../../../../shared/routes';
 
 const CTASection = () => {
   return (
@@ -11,14 +12,14 @@ const CTASection = () => {
       </p>
       <div className="mt-8 flex justify-center gap-3">
         <Link
-          to="/register"
+          to={ROUTES.REGISTER}
           className="bg-primary text-primary-foreground shadow hover:bg-primary/90 h-10 rounded-md px-8 py-1.5"
         >
           Publicar propiedad
         </Link>
 
         <Link
-          to="/login"
+          to={ROUTES.LOGIN}
           className="border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-10 rounded-md px-8 py-1.5"
         >
           Ingresar

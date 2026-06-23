@@ -14,6 +14,8 @@ import { useUser } from '../../shared/auth/provider/useContextValue';
 import TenantLayout from '../../routes/TenantLayout';
 import ExploreProperties from '../../features/tenant/exploreProperties/pages/ExploreProperties';
 import OwnerPropertyDetail from '../../features/owner/owner-property/pages/OwnerPropertyDetail';
+import TenantPropertyDetail from '../../features/tenant/tenant-property-detail/page/TenantPropertyDetail';
+import TenantContracts from '../../features/tenant/tenant-contracts/page/TenantContracts';
 
 export const AppRouter = () => {
   const { user } = useUser();
@@ -46,10 +48,13 @@ export const AppRouter = () => {
 
         {/* TENANT */}
 
-        <Route element={<TenantLayout />}>
-          {user.role === 'tenant' && <Route path="/explore" element={<ExploreProperties />} />}
-          {/* <Route path="/my-contracts" element={<TenantContracts />} /> */}
-        </Route>
+        {user.role === 'tenant' && (
+          <Route element={<TenantLayout />}>
+            <Route path={ROUTES.EXPLORE_PROPERTIES} element={<ExploreProperties />} />
+            <Route path={ROUTES.TENANT_PROPERTY_DETAIL} element={<TenantPropertyDetail />} />
+            <Route path={ROUTES.TENANT_CONTRACTS} element={<TenantContracts />} />
+          </Route>
+        )}
 
         <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
       </Routes>

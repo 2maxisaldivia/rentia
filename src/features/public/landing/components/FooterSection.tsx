@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Logo } from '../../../../shared/components/Logo';
+import { ROUTES } from '../../../../shared/routes';
 
 const FooterSection = () => {
   return (
@@ -26,7 +27,7 @@ const FooterSection = () => {
               </a>
             </li>
             <li>
-              <Link to="/dashboard" className="hover:text-foreground">
+              <Link to={ROUTES.DASHBOARD} className="hover:text-foreground">
                 Dashboard
               </Link>
             </li>
@@ -36,17 +37,17 @@ const FooterSection = () => {
           <p className="text-sm font-semibold">Cuenta</p>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             <li>
-              <Link to="/login" className="hover:text-foreground">
+              <Link to={ROUTES.LOGIN} className="hover:text-foreground">
                 Iniciar sesión
               </Link>
             </li>
             <li>
-              <Link to="/register" className="hover:text-foreground">
+              <Link to={ROUTES.REGISTER} className="hover:text-foreground">
                 Crear cuenta
               </Link>
             </li>
             <li>
-              <Link to="/tenant" className="hover:text-foreground">
+              <Link to={ROUTES.LOGIN} className="hover:text-foreground">
                 Soy inquilino
               </Link>
             </li>

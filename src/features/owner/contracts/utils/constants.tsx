@@ -1,4 +1,4 @@
-export const rows = [
+export const ownerRows = [
   {
     id: 'C-1023',
     prop: 'Corrientes 1234',
@@ -38,5 +38,18 @@ export const rows = [
     amount: '$ 410.000',
     status: 'finalizado',
     tone: 'muted' as const,
+  },
+];
+
+export const tenantRows = [
+  {
+    id: 'C-1023',
+    prop: 'Corrientes 1234',
+    owner: 'Maria Julia',
+    start: '01/03/2025',
+    end: '01/03/2027',
+    amount: '$ 320.000',
+    status: 'activo',
+    tone: 'success' as const,
   },
 ];

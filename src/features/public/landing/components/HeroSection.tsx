@@ -2,6 +2,7 @@ import { ArrowRight, Check, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 // import heroImg from '../../../assets/hero.png';
 import heroImg from '../../../../assets/hero.png';
+import { ROUTES } from '../../../../shared/routes';
 
 const HeroSection = () => {
   return (
@@ -22,7 +23,7 @@ const HeroSection = () => {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              to="/register"
+              to={ROUTES.REGISTER}
               className="
       inline-flex items-center gap-2
       rounded-lg
@@ -40,7 +41,7 @@ const HeroSection = () => {
             </Link>
 
             <Link
-              to="/login"
+              to={ROUTES.LOGIN}
               className="
       inline-flex items-center
       rounded-lg

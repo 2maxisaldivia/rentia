@@ -52,7 +52,7 @@ const ExploreProperties = () => {
             </article>
           );
           return disponible ? (
-            <Link key={p.id} to="/propiedades/$id" className="block">
+            <Link key={p.id} to={`/properties-available/${p.id}`} className="block">
               {Card}
             </Link>
           ) : (

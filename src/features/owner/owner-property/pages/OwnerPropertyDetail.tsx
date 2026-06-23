@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import PageHeader from '../../dashboard/pages/components/PageHeader';
 import StatusPill from '../../dashboard/pages/components/StatusPill';
 import Card from '../components/Card';
+import { ROUTES } from '../../../../shared/routes';
 
 const gallery = [
   'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200',
@@ -15,7 +16,7 @@ const OwnerPropertyDetail = () => {
   return (
     <>
       <Link
-        to="/properties"
+        to={ROUTES.PROPERTIES}
         className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" /> Volver a propiedades

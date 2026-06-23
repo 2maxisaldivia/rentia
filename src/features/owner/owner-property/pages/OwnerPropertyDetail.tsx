@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, FileText, MapPin, MessageSquare } from 'lucide-react';
+import { ArrowLeft, FileText, MapPin } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 
 import PageHeader from '../../dashboard/pages/components/PageHeader';
@@ -9,6 +9,11 @@ import { useUser } from '../../../../shared/auth/provider/useContextValue';
 import { ROUTES } from '../../../../shared/routes';
 
 import { getPropertyById, type Property } from '../../../../services/property.service';
+
+import { getContractByPropertyId } from '../../../../services/contract.service';
+
+import type { Contract } from '../../../../shared/types/Contract';
+import { downloadContractPdf } from '../../../../services/pdf.service';
 
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200';
 
@@ -24,7 +29,10 @@ const OwnerPropertyDetail = () => {
   const { user } = useUser();
 
   const [property, setProperty] = useState<Property | null>(null);
+  const [contract, setContract] = useState<Contract | null>(null);
+
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingContract, setIsLoadingContract] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
@@ -36,29 +44,47 @@ const OwnerPropertyDetail = () => {
       }
 
       try {
-        const data = await getPropertyById(id);
+        const propertyData = await getPropertyById(id);
 
-        if (!data) {
+        if (!propertyData) {
           setErrorMessage('No encontramos esta propiedad.');
           return;
         }
 
-        if (data.ownerId !== user.id) {
+        if (propertyData.ownerId !== user.id) {
           setErrorMessage('No tenés permiso para ver esta propiedad.');
           return;
         }
 
-        setProperty(data);
+        setProperty(propertyData);
+
+        if (propertyData.status === 'rented') {
+          setIsLoadingContract(true);
+
+          const contractData = await getContractByPropertyId(propertyData.id);
+
+          setContract(contractData);
+        }
       } catch (error) {
         console.error('Error obteniendo propiedad:', error);
+
         setErrorMessage('Ocurrió un error al cargar la propiedad. Intentá nuevamente.');
       } finally {
         setIsLoading(false);
+        setIsLoadingContract(false);
       }
     };
 
     fetchProperty();
   }, [id, user.id]);
+
+  const handleDownloadContract = () => {
+    if (!contract) {
+      return;
+    }
+
+    downloadContractPdf(contract);
+  };
 
   if (isLoading) {
     return <p className="text-sm text-muted-foreground">Cargando propiedad...</p>;
@@ -100,34 +126,11 @@ const OwnerPropertyDetail = () => {
         title={property.title}
         description={`${property.type} · ${property.location}`}
         actions={
-          <>
+          !disponible && (
             <button
               type="button"
-              disabled={!property.tenantId}
-              className="
-                flex
-                items-center
-                gap-2
-                rounded-lg
-                border border-border
-                bg-background
-                px-4
-                py-2
-                text-sm
-                font-medium
-                transition
-                hover:bg-accent
-                disabled:cursor-not-allowed
-                disabled:opacity-60
-              "
-            >
-              <MessageSquare className="h-4 w-4" />
-              Contactar inquilino
-            </button>
-
-            <button
-              type="button"
-              disabled={!property.tenantId}
+              disabled={!contract || isLoadingContract}
+              onClick={handleDownloadContract}
               className="
                 flex
                 items-center
@@ -146,9 +149,14 @@ const OwnerPropertyDetail = () => {
               "
             >
               <FileText className="h-4 w-4" />
-              Ver contrato
+
+              {isLoadingContract
+                ? 'Buscando contrato...'
+                : contract
+                  ? 'Descargar contrato'
+                  : 'Contrato no disponible'}
             </button>
-          </>
+          )
         }
       />
 
@@ -189,7 +197,7 @@ const OwnerPropertyDetail = () => {
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Situación</span>
 
-            <StatusPill tone="success">{statusLabel}</StatusPill>
+            <StatusPill tone={disponible ? 'success' : 'warning'}>{statusLabel}</StatusPill>
           </div>
 
           <p className="mt-4 text-xs text-muted-foreground">
@@ -208,15 +216,18 @@ const OwnerPropertyDetail = () => {
                 </div>
 
                 <div>
-                  <p className="text-sm font-semibold">Inquilino asignado</p>
+                  <p className="text-sm font-semibold">
+                    {contract?.tenant.fullName ?? 'Inquilino asignado'}
+                  </p>
 
-                  <p className="text-xs text-muted-foreground">El contrato está activo</p>
+                  <p className="text-xs text-muted-foreground">
+                    {contract?.tenant.email ?? 'El contrato se encuentra activo'}
+                  </p>
                 </div>
               </div>
 
               <p className="mt-4 text-xs text-muted-foreground">
-                Los datos completos del inquilino se mostrarán al integrar la colección de
-                contratos.
+                Podés descargar el contrato desde el botón superior.
               </p>
             </>
           ) : (

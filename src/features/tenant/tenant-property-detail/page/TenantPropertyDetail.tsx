@@ -1,12 +1,18 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, Wallet } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import StatusPill from '../../../owner/dashboard/pages/components/StatusPill';
 import { ROUTES } from '../../../../shared/routes';
+import { useUser } from '../../../../shared/auth/provider/useContextValue';
 import Card from '../components/Card';
 
 import { getPropertyById, type Property } from '../../../../services/property.service';
+
+import { createRentalContract } from '../../../../services/contract.service';
+import { downloadContractPdf } from '../../../../services/pdf.service';
+
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200';
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat('es-AR', {
@@ -17,9 +23,13 @@ const formatPrice = (price: number) =>
 
 const TenantPropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { user } = useUser();
 
   const [property, setProperty] = useState<Property | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRequesting, setIsRequesting] = useState(false);
+  const [requestError, setRequestError] = useState('');
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -42,15 +52,60 @@ const TenantPropertyDetail = () => {
     fetchProperty();
   }, [id]);
 
+  const handleRequestRental = async () => {
+    if (!property || !user) {
+      setRequestError('No pudimos identificar tu cuenta para generar el contrato.');
+      return;
+    }
+
+    setRequestError('');
+    setIsRequesting(true);
+
+    try {
+      const contract = await createRentalContract({
+        propertyId: property.id,
+        tenant: user,
+      });
+
+      downloadContractPdf(contract);
+
+      navigate(ROUTES.TENANT_CONTRACTS);
+    } catch (error) {
+      console.error('Error solicitando alquiler:', error);
+
+      setRequestError(
+        error instanceof Error
+          ? error.message
+          : 'No pudimos generar el contrato. Intentá nuevamente.',
+      );
+    } finally {
+      setIsRequesting(false);
+    }
+  };
+
   if (isLoading) {
     return <p className="text-sm text-muted-foreground">Cargando propiedad...</p>;
   }
 
   if (!property) {
-    return <p className="text-sm text-muted-foreground">No encontramos esta propiedad.</p>;
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground">No encontramos esta propiedad.</p>
+
+        <Link
+          to={ROUTES.TENANT_EXPLORE}
+          className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Volver a explorar propiedades
+        </Link>
+      </div>
+    );
   }
 
   const disponible = property.status === 'available';
+
+  const images = property.images && property.images.length > 0 ? property.images : [FALLBACK_IMAGE];
 
   return (
     <>
@@ -62,6 +117,7 @@ const TenantPropertyDetail = () => {
           gap-2
           text-sm
           text-muted-foreground
+          transition
           hover:text-foreground
         "
       >
@@ -88,13 +144,13 @@ const TenantPropertyDetail = () => {
           "
         >
           <img
-            src={property.images?.[0]}
+            src={images[0]}
             alt={property.title}
             className="h-full max-h-[480px] w-full object-cover"
           />
         </div>
 
-        {property.images?.slice(1).map((src) => (
+        {images.slice(1, 4).map((src) => (
           <div
             key={src}
             className="
@@ -106,8 +162,10 @@ const TenantPropertyDetail = () => {
             <img
               src={src}
               alt={property.title}
+              loading="lazy"
               className="
                 aspect-[4/3]
+                h-full
                 w-full
                 object-cover
               "
@@ -117,15 +175,11 @@ const TenantPropertyDetail = () => {
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-4">
-        {/* Descripción */}
-
         <div className="lg:col-span-2">
           <Card title="Descripción">
             <p className="text-sm text-muted-foreground">{property.description}</p>
           </Card>
         </div>
-
-        {/* Estado */}
 
         <div>
           <Card title="Estado">
@@ -139,14 +193,20 @@ const TenantPropertyDetail = () => {
           </Card>
         </div>
 
-        {/* Alquiler */}
-
         <div>
           <Card title="Alquiler mensual">
             <p className="text-2xl font-semibold">{formatPrice(property.price)}</p>
 
+            {requestError && (
+              <p className="mt-3 text-xs text-destructive" role="alert">
+                {requestError}
+              </p>
+            )}
+
             <button
-              disabled={!disponible}
+              type="button"
+              disabled={!disponible || isRequesting}
+              onClick={handleRequestRental}
               className="
                 mt-5
                 flex
@@ -169,7 +229,11 @@ const TenantPropertyDetail = () => {
             >
               <Wallet className="h-4 w-4" />
 
-              {disponible ? 'Solicitar alquiler' : 'No disponible'}
+              {isRequesting
+                ? 'Generando contrato...'
+                : disponible
+                  ? 'Solicitar alquiler'
+                  : 'No disponible'}
             </button>
           </Card>
         </div>

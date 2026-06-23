@@ -1,6 +1,7 @@
-import { ArrowRight } from 'lucide-react';
 import { useState } from 'react';
+import { ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
 import { registerUser } from '../../../../../services/auth.service';
 import { createUserProfile } from '../../../../../services/user.service';
 import { ROUTES } from '../../../../../shared/routes';
@@ -12,32 +13,41 @@ const RegisterForm = () => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
   const [role, setRole] = useState<'owner' | 'tenant'>('tenant');
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    setErrorMessage('');
+    setIsLoading(true);
+
+    try {
+      const firebaseUser = await registerUser(email, password);
+
+      await createUserProfile({
+        id: firebaseUser.uid,
+        firstName,
+        lastName,
+        email,
+        role,
+        createdAt: new Date(),
+      });
+
+      navigate(role === 'owner' ? ROUTES.OWNER_DASHBOARD : ROUTES.TENANT_EXPLORE);
+    } catch (error) {
+      console.error('Error al crear la cuenta:', error);
+
+      setErrorMessage('No pudimos crear la cuenta. Revisá los datos e intentá nuevamente.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <form
-      className="mt-8 space-y-4"
-      onSubmit={async (e) => {
-        e.preventDefault();
-
-        try {
-          const firebaseUser = await registerUser(email, password);
-
-          await createUserProfile({
-            id: firebaseUser.uid,
-            firstName,
-            lastName,
-            email,
-            role,
-            createdAt: new Date(),
-          });
-
-          navigate(role === 'owner' ? `${ROUTES.OWNER_DASHBOARD}` : `${ROUTES.TENANT_EXPLORE}`);
-        } catch (error) {
-          console.error(error);
-        }
-      }}
-    >
+    <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <label htmlFor="name" className="text-sm font-medium">
@@ -46,10 +56,11 @@ const RegisterForm = () => {
 
           <input
             id="name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
             required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            value={firstName}
+            onChange={(event) => setFirstName(event.target.value)}
+            disabled={isLoading}
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
           />
         </div>
 
@@ -60,10 +71,11 @@ const RegisterForm = () => {
 
           <input
             id="last"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
             required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            value={lastName}
+            onChange={(event) => setLastName(event.target.value)}
+            disabled={isLoading}
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
           />
         </div>
       </div>
@@ -76,10 +88,11 @@ const RegisterForm = () => {
         <input
           id="email"
           type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          disabled={isLoading}
+          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
         />
       </div>
 
@@ -91,42 +104,47 @@ const RegisterForm = () => {
         <input
           id="pass"
           type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
           required
-          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          minLength={6}
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          disabled={isLoading}
+          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
         />
       </div>
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Tipo de cuenta</label>
+
+      <div className="space-y-1.5">
+        <label htmlFor="role" className="text-sm font-medium">
+          Tipo de cuenta
+        </label>
 
         <select
+          id="role"
           value={role}
-          onChange={(e) => setRole(e.target.value as 'owner' | 'tenant')}
-          className="
-      w-full
-      rounded-md
-      border border-input
-      bg-background
-      px-3 py-2
-      text-sm
-      focus:outline-none
-      focus:ring-2
-      focus:ring-ring
-    "
+          onChange={(event) => setRole(event.target.value as 'owner' | 'tenant')}
+          disabled={isLoading}
+          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
         >
           <option value="tenant">Inquilino</option>
-
           <option value="owner">Propietario</option>
         </select>
       </div>
 
+      {errorMessage && <p className="text-sm text-destructive">{errorMessage}</p>}
+
       <button
         type="submit"
-        className="flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-primary-foreground hover:opacity-90 transition"
+        disabled={isLoading}
+        className="flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        Crear cuenta
-        <ArrowRight className="h-4 w-4" />
+        {isLoading ? (
+          'Creando cuenta...'
+        ) : (
+          <>
+            Crear cuenta
+            <ArrowRight className="h-4 w-4" />
+          </>
+        )}
       </button>
     </form>
   );

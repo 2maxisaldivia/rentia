@@ -1,19 +1,49 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '../../../../../shared/auth/provider/useContextValue';
+
+import { loginUser } from '../../../../../services/auth.service';
+import { getUserProfile } from '../../../../../services/user.service';
 import { ROUTES } from '../../../../../shared/routes';
 
 const LoginForm = ({ handleRecoveryPass }: { handleRecoveryPass: () => void }) => {
-  const { user } = useUser();
   const navigate = useNavigate();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    setErrorMessage('');
+    setIsLoading(true);
+
+    try {
+      const firebaseUser = await loginUser(email, password);
+
+      const userProfile = await getUserProfile(firebaseUser.uid);
+
+      if (!userProfile) {
+        setErrorMessage(
+          'No encontramos el perfil de este usuario. Intentá registrarte nuevamente.',
+        );
+        return;
+      }
+
+      navigate(userProfile.role === 'owner' ? ROUTES.OWNER_DASHBOARD : ROUTES.TENANT_EXPLORE);
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+
+      setErrorMessage('El email o la contraseña son incorrectos. Intentá nuevamente.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <form
-      className="mt-8 space-y-4"
-      onSubmit={(e) => {
-        e.preventDefault();
-        navigate(user.role === 'owner' ? ROUTES.DASHBOARD : ROUTES.EXPLORE_PROPERTIES);
-      }}
-    >
-      {/* Email */}
+    <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
       <div className="space-y-1.5">
         <label htmlFor="email" className="text-sm font-medium">
           Email
@@ -24,11 +54,13 @@ const LoginForm = ({ handleRecoveryPass }: { handleRecoveryPass: () => void }) =
           type="email"
           placeholder="hola@rentia.app"
           required
-          className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          disabled={isLoading}
+          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
         />
       </div>
 
-      {/* Password */}
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
           <label htmlFor="pass" className="text-sm font-medium">
@@ -38,7 +70,8 @@ const LoginForm = ({ handleRecoveryPass }: { handleRecoveryPass: () => void }) =
           <button
             type="button"
             onClick={handleRecoveryPass}
-            className="text-xs text-primary hover:underline"
+            disabled={isLoading}
+            className="text-xs text-primary hover:underline disabled:cursor-not-allowed disabled:opacity-60"
           >
             Recuperar
           </button>
@@ -49,16 +82,21 @@ const LoginForm = ({ handleRecoveryPass }: { handleRecoveryPass: () => void }) =
           type="password"
           placeholder="••••••••"
           required
-          className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          disabled={isLoading}
+          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
         />
       </div>
 
-      {/* Submit */}
+      {errorMessage && <p className="text-sm text-destructive">{errorMessage}</p>}
+
       <button
         type="submit"
-        className="w-full flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-white font-medium hover:bg-ring transition"
+        disabled={isLoading}
+        className="flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        Ingresar
+        {isLoading ? 'Ingresando...' : 'Ingresar'}
       </button>
     </form>
   );

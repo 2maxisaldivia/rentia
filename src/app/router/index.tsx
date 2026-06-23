@@ -9,6 +9,7 @@ import { ROUTES } from '../../shared/routes';
 import Dashboard from '../../features/dashboard/pages/Dashboard';
 import PrivateLayout from '../../routes/PrivateLayout';
 import NavPanel from '../../layouts/NavPanel';
+import Properties from '../../features/properties/pages/Properties';
 
 export const AppRouter = () => {
   return (
@@ -23,6 +24,7 @@ export const AppRouter = () => {
         <Route element={<PrivateLayout />}>
           <Route element={<NavPanel />}>
             <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
+            <Route path={ROUTES.PROPERTIES} element={<Properties />} />
           </Route>
         </Route>
       </Routes>

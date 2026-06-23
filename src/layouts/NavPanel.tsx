@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Bell, Search, User, Settings } from 'lucide-react';
+import { Bell, Search, User } from 'lucide-react';
 import { Logo } from '../shared/components/Logo';
 import { nav } from './utils/constants';
 
@@ -8,8 +8,6 @@ const NavPanel = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Sidebar */}
-
       <aside
         className="
           fixed left-0 top-0
@@ -74,24 +72,6 @@ const NavPanel = () => {
         {/* Footer sidebar */}
 
         <div className="border-t border-border">
-          {/* Settings */}
-
-          <Link
-            to="/settings"
-            className="
-              flex items-center gap-3
-              px-5 py-4
-              text-sm
-              text-muted-foreground
-              transition-colors
-              hover:bg-sidebar-accent/60
-              hover:text-foreground
-            "
-          >
-            <Settings size={16} />
-            Configuración
-          </Link>
-
           {/* User */}
 
           <div

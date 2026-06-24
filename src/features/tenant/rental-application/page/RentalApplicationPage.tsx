@@ -18,6 +18,7 @@ import type { RentalApplication, RentalGuarantor } from '../../../../shared/type
 import { createRentalContract } from '../../../../services/contract.service';
 import { downloadContractPdf } from '../../../../services/pdf.service';
 import { getPropertyById, type Property } from '../../../../services/property.service';
+import { toast } from 'sonner';
 
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200';
 
@@ -255,7 +256,14 @@ const RentalApplicationPage = () => {
     event.preventDefault();
 
     if (!property || property.status !== 'available') {
-      setErrorMessage('Esta propiedad ya no se encuentra disponible.');
+      const message = 'Esta propiedad ya no se encuentra disponible.';
+
+      setErrorMessage(message);
+
+      toast.error('No pudimos alquilar la propiedad', {
+        description: message,
+      });
+
       return;
     }
 
@@ -270,14 +278,25 @@ const RentalApplicationPage = () => {
       });
 
       downloadContractPdf(contract);
+
+      toast.success('Alquiler confirmado correctamente', {
+        description: `Se generó el contrato para ${property.title}.`,
+      });
+
       navigate(ROUTES.TENANT_CONTRACTS);
     } catch (error) {
       console.error('Error solicitando alquiler:', error);
-      setErrorMessage(
+
+      const message =
         error instanceof Error
           ? error.message
-          : 'No pudimos generar el contrato. Intentá nuevamente.',
-      );
+          : 'No pudimos generar el contrato. Intentá nuevamente.';
+
+      setErrorMessage(message);
+
+      toast.error('No pudimos alquilar la propiedad', {
+        description: message,
+      });
     } finally {
       setIsSubmitting(false);
     }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Plus } from 'lucide-react';
+import { Building2, MapPin, Plus } from 'lucide-react';
 
 import PageHeader from '../../dashboard/pages/components/PageHeader';
 import StatusPill from '../../dashboard/pages/components/StatusPill';
@@ -71,11 +71,32 @@ const Properties = () => {
 
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Cargando propiedades...</p>
+      ) : properties.length === 0 ? (
+        <div className="flex min-h-72 flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card px-6 py-12 text-center shadow-soft">
+          <span className="grid h-14 w-14 place-items-center rounded-2xl bg-primary-soft text-primary">
+            <Building2 className="h-7 w-7" />
+          </span>
+
+          <h2 className="mt-5 text-lg font-semibold">Todavía no tenés propiedades publicadas</h2>
+
+          <p className="mt-2 max-w-md text-sm text-muted-foreground">
+            Publicá tu primera propiedad para que los inquilinos puedan verla y solicitar un
+            alquiler.
+          </p>
+
+          <Link
+            to={ROUTES.OWNER_PROPERTY_CREATE}
+            className="mt-6 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+          >
+            <Plus className="h-4 w-4" />
+            Agregar propiedad
+          </Link>
+        </div>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {properties.map((p) => (
             <Link
-              to={`/owner/properties/${p.id}`}
+              to={ROUTES.OWNER_PROPERTY_DETAIL.replace(':id', p.id)}
               key={p.id}
               className="group overflow-hidden rounded-2xl border border-border bg-card shadow-soft transition hover:-translate-y-0.5 hover:shadow-card"
             >

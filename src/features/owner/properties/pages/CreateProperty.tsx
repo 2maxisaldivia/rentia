@@ -7,6 +7,7 @@ import PageHeader from '../../dashboard/pages/components/PageHeader';
 import { useUser } from '../../../../shared/auth/provider/useContextValue';
 import { ROUTES } from '../../../../shared/routes';
 import { createProperty } from '../../../../services/property.service';
+import { toast } from 'sonner';
 
 const CreateProperty = () => {
   const navigate = useNavigate();
@@ -81,11 +82,24 @@ const CreateProperty = () => {
         images,
       });
 
+      toast.success('Propiedad publicada correctamente', {
+        description: `${trimmedTitle} ya está disponible para los inquilinos.`,
+      });
+
       navigate(ROUTES.OWNER_PROPERTIES);
     } catch (error) {
       console.error('Error creando propiedad:', error);
 
-      setErrorMessage('No pudimos publicar la propiedad. Intentá nuevamente.');
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'No pudimos publicar la propiedad. Intentá nuevamente.';
+
+      setErrorMessage(message);
+
+      toast.error('No pudimos publicar la propiedad', {
+        description: message,
+      });
     } finally {
       setIsSubmitting(false);
     }

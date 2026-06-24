@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin } from 'lucide-react';
+import { Building2, MapPin } from 'lucide-react';
 
 import PageHeader from '../../../owner/dashboard/pages/components/PageHeader';
 import StatusPill from '../../../owner/dashboard/pages/components/StatusPill';
 import { getAvailableProperties, type Property } from '../../../../services/property.service';
+import { ROUTES } from '../../../../shared/routes';
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat('es-AR', {
@@ -37,10 +38,29 @@ const ExploreProperties = () => {
 
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Cargando propiedades...</p>
+      ) : properties.length === 0 ? (
+        <div className="flex min-h-72 flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card px-6 py-12 text-center shadow-soft">
+          <span className="grid h-14 w-14 place-items-center rounded-2xl bg-primary-soft text-primary">
+            <Building2 className="h-7 w-7" />
+          </span>
+
+          <h2 className="mt-5 text-lg font-semibold">
+            No hay propiedades disponibles por el momento
+          </h2>
+
+          <p className="mt-2 max-w-md text-sm text-muted-foreground">
+            Todas las propiedades publicadas se encuentran alquiladas o todavía no hay nuevas
+            unidades disponibles. Volvé a consultar más tarde.
+          </p>
+        </div>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
           {properties.map((p) => (
-            <Link key={p.id} to={`/tenant/properties/${p.id}`} className="block">
+            <Link
+              key={p.id}
+              to={ROUTES.TENANT_PROPERTY_DETAIL.replace(':id', p.id)}
+              className="block"
+            >
               <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-soft transition hover:-translate-y-0.5 hover:shadow-md">
                 <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                   <img
@@ -51,7 +71,7 @@ const ExploreProperties = () => {
                   />
 
                   <div className="absolute left-3 top-3">
-                    <StatusPill tone="success">disponible</StatusPill>
+                    <StatusPill tone="success">Disponible</StatusPill>
                   </div>
                 </div>
 

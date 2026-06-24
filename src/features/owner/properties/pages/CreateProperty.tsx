@@ -31,6 +31,24 @@ const CreateProperty = () => {
       return;
     }
 
+    const trimmedTitle = title.trim();
+    const trimmedType = type.trim();
+    const trimmedLocation = location.trim();
+    const trimmedAddress = address.trim();
+    const trimmedDescription = description.trim();
+
+    if (
+      !trimmedTitle ||
+      !trimmedType ||
+      !trimmedLocation ||
+      !trimmedAddress ||
+      !trimmedDescription ||
+      !imageUrls.trim()
+    ) {
+      setErrorMessage('Todos los campos son obligatorios.');
+      return;
+    }
+
     const numericPrice = Number(price);
 
     if (!Number.isFinite(numericPrice) || numericPrice <= 0) {
@@ -53,13 +71,13 @@ const CreateProperty = () => {
 
     try {
       await createProperty({
-        title: title.trim(),
-        type,
-        description: description.trim(),
+        title: trimmedTitle,
+        type: trimmedType,
+        description: trimmedDescription,
         price: numericPrice,
         ownerId: user.id,
-        location: location.trim(),
-        address: address.trim(),
+        location: trimmedLocation,
+        address: trimmedAddress,
         images,
       });
 
@@ -119,6 +137,7 @@ const CreateProperty = () => {
 
             <select
               id="type"
+              required
               disabled={isSubmitting}
               value={type}
               onChange={(event) => setType(event.target.value)}

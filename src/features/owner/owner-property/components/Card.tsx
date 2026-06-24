@@ -1,9 +1,11 @@
 const Card = ({ title, children }: { title: string; children: React.ReactNode }) => {
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 shadow-soft">
-      <h3 className="mb-3 font-semibold">{title}</h3>
-      {children}
-    </div>
+    <section className="rounded-2xl border border-border bg-card p-6 shadow-soft">
+      <h3 className="font-semibold">{title}</h3>
+
+      <div className="mt-4">{children}</div>
+    </section>
   );
 };
+
 export default Card;

@@ -58,15 +58,39 @@ export const createProperty = async ({
   address,
   images,
 }: CreatePropertyInput): Promise<Property> => {
+  const normalizedTitle = title.trim();
+  const normalizedType = type.trim();
+  const normalizedDescription = description.trim();
+  const normalizedOwnerId = ownerId.trim();
+  const normalizedLocation = location.trim();
+  const normalizedAddress = address.trim();
+  const normalizedImages = images.map((image) => image.trim()).filter(Boolean);
+
+  if (
+    !normalizedTitle ||
+    !normalizedType ||
+    !normalizedDescription ||
+    !normalizedOwnerId ||
+    !normalizedLocation ||
+    !normalizedAddress ||
+    normalizedImages.length === 0
+  ) {
+    throw new Error('Todos los campos de la propiedad son obligatorios.');
+  }
+
+  if (!Number.isFinite(price) || price <= 0) {
+    throw new Error('El precio mensual debe ser mayor a cero.');
+  }
+
   const propertyData: Omit<Property, 'id'> = {
-    title,
-    type,
-    description,
+    title: normalizedTitle,
+    type: normalizedType,
+    description: normalizedDescription,
     price,
-    ownerId,
-    location,
-    address,
-    images,
+    ownerId: normalizedOwnerId,
+    location: normalizedLocation,
+    address: normalizedAddress,
+    images: normalizedImages,
 
     status: 'available',
     tenantId: null,

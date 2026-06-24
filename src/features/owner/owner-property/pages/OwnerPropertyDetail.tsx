@@ -14,6 +14,8 @@ import { getContractByPropertyId } from '../../../../services/contract.service';
 
 import type { Contract } from '../../../../shared/types/Contract';
 import { downloadContractPdf } from '../../../../services/pdf.service';
+import InfoItem from '../components/InfoItem';
+import Card from '../components/Card';
 
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200';
 
@@ -258,23 +260,3 @@ const OwnerPropertyDetail = () => {
 };
 
 export default OwnerPropertyDetail;
-
-function Card({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="rounded-2xl border border-border bg-card p-6 shadow-soft">
-      <h3 className="font-semibold">{title}</h3>
-
-      <div className="mt-4">{children}</div>
-    </section>
-  );
-}
-
-function InfoItem({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-xl bg-secondary/50 p-4">
-      <p className="text-xs text-muted-foreground">{label}</p>
-
-      <p className="mt-1 text-sm font-semibold">{value}</p>
-    </div>
-  );
-}

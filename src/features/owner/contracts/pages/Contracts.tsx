@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Download, FileText } from 'lucide-react';
+import { Download } from 'lucide-react';
 
 import StatusPill from '../../dashboard/pages/components/StatusPill';
 import PageHeader from '../../dashboard/pages/components/PageHeader';
@@ -9,22 +9,8 @@ import type { Contract } from '../../../../shared/types/Contract';
 
 import { getOwnerContracts } from '../../../../services/contract.service';
 import { downloadContractPdf } from '../../../../services/pdf.service';
-
-const formatPrice = (price: number) =>
-  new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: 'ARS',
-    maximumFractionDigits: 0,
-  }).format(price);
-
-const formatDate = (date: string) =>
-  new Intl.DateTimeFormat('es-AR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  }).format(new Date(`${date}T12:00:00`));
-
-const getContractCode = (id: string) => `C-${id.slice(0, 6).toUpperCase()}`;
+import { formatDate, formatPrice, getContractCode } from '../utils/formatters';
+import { ContractTimeline } from '../components/ContractTimeLine';
 
 const Contracts = () => {
   const { user } = useUser();
@@ -158,71 +144,3 @@ const Contracts = () => {
 };
 
 export default Contracts;
-
-function ContractTimeline({ contract }: { contract: Contract }) {
-  const events = [
-    {
-      title: 'Contrato generado',
-      date: formatDate(contract.createdAt),
-      tone: 'success',
-    },
-    {
-      title: 'Inicio de vigencia',
-      date: formatDate(contract.startDate),
-      tone: 'primary',
-    },
-    {
-      title: 'Vencimiento final',
-      date: formatDate(contract.endDate),
-      tone: 'muted',
-    },
-  ] as const;
-
-  return (
-    <div className="rounded-2xl border border-border bg-card p-6 shadow-soft">
-      <h3 className="font-semibold">Timeline · {getContractCode(contract.id)}</h3>
-
-      <p className="mt-1 text-xs text-muted-foreground">
-        {contract.property.title} · Inquilino: {contract.tenant.fullName}
-      </p>
-
-      <ol className="relative mt-5 space-y-5 border-l border-border pl-5">
-        {events.map((event) => (
-          <li key={event.title}>
-            <span
-              className={`
-                absolute
-                -left-[7px]
-                h-3.5
-                w-3.5
-                rounded-full
-                border-2
-                border-background
-                ${
-                  event.tone === 'success'
-                    ? 'bg-success'
-                    : event.tone === 'primary'
-                      ? 'bg-primary'
-                      : 'bg-muted-foreground'
-                }
-              `}
-            />
-
-            <p className="text-sm font-medium">{event.title}</p>
-
-            <p className="text-xs text-muted-foreground">{event.date}</p>
-          </li>
-        ))}
-      </ol>
-
-      <button
-        type="button"
-        onClick={() => downloadContractPdf(contract)}
-        className="mt-6 flex w-full items-center justify-center gap-2 rounded-md border border-border bg-background px-4 py-2 text-sm font-medium transition hover:bg-accent"
-      >
-        <FileText className="h-4 w-4" />
-        Generar PDF
-      </button>
-    </div>
-  );
-}

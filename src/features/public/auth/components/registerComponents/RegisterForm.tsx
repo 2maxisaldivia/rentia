@@ -2,7 +2,10 @@ import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-import { registerUser } from '../../../../../services/auth.service';
+import {
+  getRegistrationErrorMessage,
+  registerUser,
+} from '../../../../../services/auth.service';
 import { createUserProfile } from '../../../../../services/user.service';
 import { ROUTES } from '../../../../../shared/routes';
 
@@ -21,17 +24,37 @@ const RegisterForm = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    const trimmedFirstName = firstName.trim();
+    const trimmedLastName = lastName.trim();
+    const trimmedEmail = email.trim();
+
+    if (
+      !trimmedFirstName ||
+      !trimmedLastName ||
+      !trimmedEmail ||
+      !password.trim() ||
+      !role
+    ) {
+      setErrorMessage('Todos los campos son obligatorios.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setErrorMessage('La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+
     setErrorMessage('');
     setIsLoading(true);
 
     try {
-      const firebaseUser = await registerUser(email, password);
+      const firebaseUser = await registerUser(trimmedEmail, password);
 
       await createUserProfile({
         id: firebaseUser.uid,
-        firstName,
-        lastName,
-        email,
+        firstName: trimmedFirstName,
+        lastName: trimmedLastName,
+        email: trimmedEmail,
         role,
         createdAt: new Date(),
       });
@@ -40,7 +63,7 @@ const RegisterForm = () => {
     } catch (error) {
       console.error('Error al crear la cuenta:', error);
 
-      setErrorMessage('No pudimos crear la cuenta. Revisá los datos e intentá nuevamente.');
+      setErrorMessage(getRegistrationErrorMessage(error));
     } finally {
       setIsLoading(false);
     }
@@ -120,6 +143,7 @@ const RegisterForm = () => {
 
         <select
           id="role"
+          required
           value={role}
           onChange={(event) => setRole(event.target.value as 'owner' | 'tenant')}
           disabled={isLoading}
@@ -130,7 +154,11 @@ const RegisterForm = () => {
         </select>
       </div>
 
-      {errorMessage && <p className="text-sm text-destructive">{errorMessage}</p>}
+      {errorMessage && (
+        <p role="alert" className="text-sm text-destructive">
+          {errorMessage}
+        </p>
+      )}
 
       <button
         type="submit"

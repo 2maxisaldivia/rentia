@@ -5,6 +5,25 @@ export type ContractPerson = {
   email: string;
 };
 
+export type RentalGuarantor = {
+  fullName: string;
+  dni: string;
+  phone: string;
+  occupation: string;
+};
+
+export type RentalApplication = {
+  dni: string;
+  dniImageUrl: string;
+  occupation: string;
+  workAddress: string | null;
+  workAddressNotApplicable: boolean;
+  phone: string;
+  maritalStatus: string;
+  salaryReceiptUrls: [string, string];
+  guarantors: [RentalGuarantor, RentalGuarantor];
+};
+
 export type ContractProperty = {
   title: string;
   type: string;
@@ -29,4 +48,5 @@ export type Contract = {
   property: ContractProperty;
   owner: ContractPerson;
   tenant: ContractPerson;
+  rentalApplication?: RentalApplication;
 };

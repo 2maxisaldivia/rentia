@@ -1,6 +1,7 @@
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   query,
   runTransaction,
@@ -10,7 +11,7 @@ import {
 } from 'firebase/firestore';
 
 import { db } from '../firebase/firestore';
-import type { Contract } from '../shared/types/Contract';
+import type { Contract, RentalApplication } from '../shared/types/Contract';
 
 type ContractUser = {
   id: string;
@@ -33,6 +34,7 @@ type PropertyDocument = {
 type CreateRentalContractInput = {
   propertyId: string;
   tenant: ContractUser;
+  rentalApplication: RentalApplication;
 };
 
 const getFullName = (user: ContractUser) => `${user.firstName} ${user.lastName}`.trim();
@@ -52,6 +54,90 @@ const getContractEndDate = (startDate: Date) => {
   endDate.setFullYear(endDate.getFullYear() + 1);
 
   return getLocalDate(endDate);
+};
+
+const normalizeText = (value: string) => (typeof value === 'string' ? value.trim() : '');
+
+const normalizeDni = (value: string) => normalizeText(value).replace(/[.\s-]/g, '');
+
+const normalizeUrl = (value: string) => {
+  const normalizedValue = normalizeText(value);
+
+  try {
+    const url = new URL(normalizedValue);
+
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      throw new Error();
+    }
+
+    return url.toString();
+  } catch {
+    throw new Error('Las fotos y los recibos deben cargarse mediante URLs válidas.');
+  }
+};
+
+const normalizeRentalApplication = (application: RentalApplication): RentalApplication => {
+  if (application.salaryReceiptUrls.length !== 2 || application.guarantors.length !== 2) {
+    throw new Error('La solicitud debe incluir dos recibos de sueldo y dos garantes.');
+  }
+
+  const dni = normalizeDni(application.dni);
+  const occupation = normalizeText(application.occupation);
+  const phone = normalizeText(application.phone);
+  const maritalStatus = normalizeText(application.maritalStatus);
+  const workAddress = application.workAddressNotApplicable
+    ? null
+    : normalizeText(application.workAddress ?? '');
+
+  if (!/^\d{7,9}$/.test(dni)) {
+    throw new Error('Ingresá un DNI válido de entre 7 y 9 dígitos.');
+  }
+
+  if (!occupation || !phone || !maritalStatus) {
+    throw new Error('Completá todos los datos personales solicitados.');
+  }
+
+  if (!application.workAddressNotApplicable && !workAddress) {
+    throw new Error('Ingresá el domicilio laboral o marcá la opción “No aplica”.');
+  }
+
+  const guarantors = application.guarantors.map((guarantor, index) => {
+    const normalizedGuarantor = {
+      fullName: normalizeText(guarantor.fullName),
+      dni: normalizeDni(guarantor.dni),
+      phone: normalizeText(guarantor.phone),
+      occupation: normalizeText(guarantor.occupation),
+    };
+
+    if (
+      !normalizedGuarantor.fullName ||
+      !normalizedGuarantor.phone ||
+      !normalizedGuarantor.occupation
+    ) {
+      throw new Error(`Completá todos los datos del garante ${index + 1}.`);
+    }
+
+    if (!/^\d{7,9}$/.test(normalizedGuarantor.dni)) {
+      throw new Error(`Ingresá un DNI válido para el garante ${index + 1}.`);
+    }
+
+    return normalizedGuarantor;
+  }) as RentalApplication['guarantors'];
+
+  return {
+    dni,
+    dniImageUrl: normalizeUrl(application.dniImageUrl),
+    occupation,
+    workAddress,
+    workAddressNotApplicable: application.workAddressNotApplicable,
+    phone,
+    maritalStatus,
+    salaryReceiptUrls: [
+      normalizeUrl(application.salaryReceiptUrls[0]),
+      normalizeUrl(application.salaryReceiptUrls[1]),
+    ],
+    guarantors,
+  };
 };
 
 const mapContract = (contractDocument: QueryDocumentSnapshot): Contract => {
@@ -97,10 +183,25 @@ export const getContractByPropertyId = async (propertyId: string): Promise<Contr
   return mapContract(snapshot.docs[0]);
 };
 
+export const getContractById = async (contractId: string): Promise<Contract | null> => {
+  const snapshot = await getDoc(doc(db, 'contracts', contractId));
+
+  if (!snapshot.exists()) {
+    return null;
+  }
+
+  return {
+    id: snapshot.id,
+    ...(snapshot.data() as Omit<Contract, 'id'>),
+  };
+};
+
 export const createRentalContract = async ({
   propertyId,
   tenant,
+  rentalApplication,
 }: CreateRentalContractInput): Promise<Contract> => {
+  const normalizedRentalApplication = normalizeRentalApplication(rentalApplication);
   const propertyRef = doc(db, 'properties', propertyId);
   const contractRef = doc(collection(db, 'contracts'));
 
@@ -172,6 +273,8 @@ export const createRentalContract = async ({
         fullName: getFullName(tenant),
         email: tenant.email,
       },
+
+      rentalApplication: normalizedRentalApplication,
     };
 
     transaction.set(contractRef, contractData);

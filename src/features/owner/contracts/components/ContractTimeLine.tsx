@@ -1,4 +1,5 @@
 import { FileText } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { downloadContractPdf } from '../../../../services/pdf.service';
 import type { Contract } from '../../../../shared/types/Contract';
 import { formatDate, getContractCode } from '../utils/formatters';
@@ -24,12 +25,16 @@ export const ContractTimeline = ({ contract }: { contract: Contract }) => {
 
   return (
     <div className="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-soft sm:p-6">
-      <h3 className="break-words font-semibold">
-        Timeline · {getContractCode(contract.id)}
-      </h3>
+      <h3 className="break-words font-semibold">Timeline · {getContractCode(contract.id)}</h3>
 
       <p className="mt-1 break-words text-xs text-muted-foreground">
-        {contract.property.title} · Inquilino: {contract.tenant.fullName}
+        {contract.property.title} · Inquilino:{' '}
+        <Link
+          to={`/owner/contracts/${contract.id}/tenant`}
+          className="font-medium text-primary hover:underline"
+        >
+          {contract.tenant.fullName}
+        </Link>
       </p>
 
       <ol className="relative mt-5 space-y-5 border-l border-border pl-5">

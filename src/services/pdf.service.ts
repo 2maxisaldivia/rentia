@@ -16,32 +16,50 @@ const formatDate = (date: string) =>
     year: 'numeric',
   }).format(new Date(`${date}T12:00:00`));
 
+const PAGE_TOP = 20;
+const PAGE_BOTTOM = 277;
+
+const ensurePageSpace = (pdf: jsPDF, y: number, requiredHeight: number) => {
+  if (y + requiredHeight <= PAGE_BOTTOM) {
+    return y;
+  }
+
+  pdf.addPage();
+
+  return PAGE_TOP;
+};
+
 const drawSectionTitle = (pdf: jsPDF, title: string, y: number) => {
+  const safeY = ensurePageSpace(pdf, y, 18);
+
   pdf.setFillColor(245, 245, 245);
-  pdf.roundedRect(20, y, 170, 10, 2, 2, 'F');
+  pdf.roundedRect(20, safeY, 170, 10, 2, 2, 'F');
 
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(11);
   pdf.setTextColor(30, 30, 30);
-  pdf.text(title, 25, y + 6.5);
+  pdf.text(title, 25, safeY + 6.5);
 
-  return y + 18;
+  return safeY + 18;
 };
 
 const drawField = (pdf: jsPDF, label: string, value: string, y: number) => {
+  const normalizedValue = value || 'No informado';
+  const lines = pdf.splitTextToSize(normalizedValue, 125);
+  const fieldHeight = Math.max(lines.length * 5, 8);
+  const safeY = ensurePageSpace(pdf, y, fieldHeight);
+
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(10);
   pdf.setTextColor(60, 60, 60);
-  pdf.text(`${label}:`, 25, y);
+  pdf.text(`${label}:`, 25, safeY);
 
   pdf.setFont('helvetica', 'normal');
   pdf.setTextColor(20, 20, 20);
 
-  const lines = pdf.splitTextToSize(value, 125);
+  pdf.text(lines, 62, safeY);
 
-  pdf.text(lines, 62, y);
-
-  return y + Math.max(lines.length * 5, 8);
+  return safeY + fieldHeight;
 };
 
 export const downloadContractPdf = (contract: Contract) => {
@@ -91,6 +109,44 @@ export const downloadContractPdf = (contract: Contract) => {
   y = drawField(pdf, 'Inquilino', contract.tenant.fullName, y);
   y = drawField(pdf, 'Email del inquilino', contract.tenant.email, y);
 
+  if (contract.rentalApplication) {
+    const application = contract.rentalApplication;
+
+    y += 7;
+
+    y = drawSectionTitle(pdf, 'DATOS DEL INQUILINO', y);
+
+    y = drawField(pdf, 'DNI', application.dni, y);
+    y = drawField(pdf, 'Teléfono', application.phone, y);
+    y = drawField(pdf, 'Estado civil', application.maritalStatus, y);
+    y = drawField(pdf, 'Ocupación', application.occupation, y);
+    y = drawField(
+      pdf,
+      'Domicilio laboral',
+      application.workAddressNotApplicable
+        ? 'No aplica (trabajo remoto o sin domicilio laboral)'
+        : (application.workAddress ?? 'No informado'),
+      y,
+    );
+
+    y += 7;
+
+    y = drawSectionTitle(pdf, 'DOCUMENTACIÓN PRESENTADA', y);
+
+    y = drawField(pdf, 'Foto del DNI', application.dniImageUrl, y);
+    y = drawField(pdf, 'Recibo de sueldo 1', application.salaryReceiptUrls[0], y);
+    y = drawField(pdf, 'Recibo de sueldo 2', application.salaryReceiptUrls[1], y);
+
+    application.guarantors.forEach((guarantor, index) => {
+      y += 7;
+      y = drawSectionTitle(pdf, `GARANTE ${index + 1}`, y);
+      y = drawField(pdf, 'Nombre y apellido', guarantor.fullName, y);
+      y = drawField(pdf, 'DNI', guarantor.dni, y);
+      y = drawField(pdf, 'Teléfono', guarantor.phone, y);
+      y = drawField(pdf, 'Ocupación', guarantor.occupation, y);
+    });
+  }
+
   y += 7;
 
   y = drawSectionTitle(pdf, 'CONDICIONES PRINCIPALES', y);
@@ -107,6 +163,7 @@ export const downloadContractPdf = (contract: Contract) => {
   y = drawField(pdf, 'Estado', 'Contrato activo', y);
 
   y += 10;
+  y = ensurePageSpace(pdf, y, 30);
 
   pdf.setDrawColor(220, 220, 220);
   pdf.line(20, y, 190, y);

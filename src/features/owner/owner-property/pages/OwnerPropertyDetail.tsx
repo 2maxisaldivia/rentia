@@ -212,24 +212,38 @@ const OwnerPropertyDetail = () => {
         <Card title="Inquilino">
           {property.tenantId ? (
             <>
-              <div className="flex items-center gap-3">
-                <div className="grid h-10 w-10 place-items-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
-                  IN
-                </div>
+              {contract ? (
+                <Link
+                  to={`/owner/contracts/${contract.id}/tenant`}
+                  className="group flex items-center gap-3 rounded-xl p-2 transition hover:bg-accent"
+                >
+                  <div className="grid h-10 w-10 place-items-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+                    IN
+                  </div>
 
-                <div>
-                  <p className="text-sm font-semibold">
-                    {contract?.tenant.fullName ?? 'Inquilino asignado'}
-                  </p>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-primary group-hover:underline">
+                      {contract.tenant.fullName}
+                    </p>
 
-                  <p className="text-xs text-muted-foreground">
-                    {contract?.tenant.email ?? 'El contrato se encuentra activo'}
-                  </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {contract.tenant.email}
+                    </p>
+                  </div>
+                </Link>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <div className="grid h-10 w-10 place-items-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+                    IN
+                  </div>
+                  <p className="text-sm font-semibold">Inquilino asignado</p>
                 </div>
-              </div>
+              )}
 
               <p className="mt-4 text-xs text-muted-foreground">
-                Podés descargar el contrato desde el botón superior.
+                {contract
+                  ? 'Tocá los datos para consultar la ficha completa del inquilino.'
+                  : 'La ficha del inquilino no se encuentra disponible.'}
               </p>
             </>
           ) : (

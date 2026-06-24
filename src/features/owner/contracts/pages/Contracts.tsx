@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Download } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 import StatusPill from '../../dashboard/pages/components/StatusPill';
 import PageHeader from '../../dashboard/pages/components/PageHeader';
@@ -83,10 +84,7 @@ const Contracts = () => {
                 const isSelected = contract.id === selectedContract?.id;
 
                 return (
-                  <article
-                    key={contract.id}
-                    className={isSelected ? 'bg-secondary/30 p-4' : 'p-4'}
-                  >
+                  <article key={contract.id} className={isSelected ? 'bg-secondary/30 p-4' : 'p-4'}>
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <button
                         type="button"
@@ -107,7 +105,14 @@ const Contracts = () => {
 
                       <div>
                         <dt className="text-xs text-muted-foreground">Inquilino</dt>
-                        <dd className="break-words">{contract.tenant.fullName}</dd>
+                        <dd className="break-words">
+                          <Link
+                            to={`/owner/contracts/${contract.id}/tenant`}
+                            className="font-medium text-primary transition hover:underline"
+                          >
+                            {contract.tenant.fullName}
+                          </Link>
+                        </dd>
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
@@ -188,7 +193,14 @@ const Contracts = () => {
 
                         <td className="px-5 py-4">{contract.property.title}</td>
 
-                        <td className="px-5 py-4">{contract.tenant.fullName}</td>
+                        <td className="px-5 py-4">
+                          <Link
+                            to={`/owner/contracts/${contract.id}/tenant`}
+                            className="font-medium text-primary transition hover:underline"
+                          >
+                            {contract.tenant.fullName}
+                          </Link>
+                        </td>
 
                         <td className="px-5 py-4 text-muted-foreground">
                           {formatDate(contract.startDate)} → {formatDate(contract.endDate)}

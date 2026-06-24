@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Download, FileText } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 import PageHeader from '../../../owner/dashboard/pages/components/PageHeader';
 import StatusPill from '../../../owner/dashboard/pages/components/StatusPill';
@@ -97,10 +98,7 @@ const TenantContracts = () => {
                 const isSelected = contract.id === selectedContract?.id;
 
                 return (
-                  <article
-                    key={contract.id}
-                    className={isSelected ? 'bg-secondary/30 p-4' : 'p-4'}
-                  >
+                  <article key={contract.id} className={isSelected ? 'bg-secondary/30 p-4' : 'p-4'}>
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <button
                         type="button"
@@ -121,7 +119,14 @@ const TenantContracts = () => {
 
                       <div>
                         <dt className="text-xs text-muted-foreground">Propietario</dt>
-                        <dd className="break-words">{contract.owner.fullName}</dd>
+                        <dd className="break-words">
+                          <Link
+                            to={`/tenant/properties/${contract.propertyId}/owner`}
+                            className="font-medium text-primary transition hover:underline"
+                          >
+                            {contract.owner.fullName}
+                          </Link>
+                        </dd>
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
@@ -202,7 +207,14 @@ const TenantContracts = () => {
 
                         <td className="px-5 py-4">{contract.property.title}</td>
 
-                        <td className="px-5 py-4">{contract.owner.fullName}</td>
+                        <td className="px-5 py-4">
+                          <Link
+                            to={`/tenant/properties/${contract.propertyId}/owner`}
+                            className="font-medium text-primary transition hover:underline"
+                          >
+                            {contract.owner.fullName}
+                          </Link>
+                        </td>
 
                         <td className="px-5 py-4 text-muted-foreground">
                           {formatDate(contract.startDate)} → {formatDate(contract.endDate)}
@@ -240,6 +252,7 @@ const TenantContracts = () => {
                 contract={selectedContract}
                 otherPersonLabel="Propietario"
                 otherPersonName={selectedContract.owner.fullName}
+                otherPersonHref={`/tenant/properties/${selectedContract.propertyId}/owner`}
               />
             </div>
           )}
@@ -255,10 +268,12 @@ function ContractTimeline({
   contract,
   otherPersonLabel,
   otherPersonName,
+  otherPersonHref,
 }: {
   contract: Contract;
   otherPersonLabel: string;
   otherPersonName: string;
+  otherPersonHref: string;
 }) {
   const events = [
     {
@@ -280,12 +295,13 @@ function ContractTimeline({
 
   return (
     <div className="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-soft sm:p-6">
-      <h3 className="break-words font-semibold">
-        Timeline · {getContractCode(contract.id)}
-      </h3>
+      <h3 className="break-words font-semibold">Timeline · {getContractCode(contract.id)}</h3>
 
       <p className="mt-1 break-words text-xs text-muted-foreground">
-        {contract.property.title} · {otherPersonLabel}: {otherPersonName}
+        {contract.property.title} · {otherPersonLabel}:{' '}
+        <Link to={otherPersonHref} className="font-medium text-primary hover:underline">
+          {otherPersonName}
+        </Link>
       </p>
 
       <ol className="relative mt-5 space-y-5 border-l border-border pl-5">

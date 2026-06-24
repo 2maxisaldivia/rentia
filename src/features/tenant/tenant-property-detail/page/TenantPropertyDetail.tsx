@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Wallet } from 'lucide-react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { ArrowLeft, UserRound, Wallet } from 'lucide-react';
+import { Link, useParams } from 'react-router-dom';
 
 import StatusPill from '../../../owner/dashboard/pages/components/StatusPill';
 import { ROUTES } from '../../../../shared/routes';
 import { useUser } from '../../../../shared/auth/provider/useContextValue';
+import type { AppUser } from '../../../../shared/auth/user';
 import Card from '../components/Card';
 
 import { getPropertyById, type Property } from '../../../../services/property.service';
-
-import { createRentalContract } from '../../../../services/contract.service';
-import { downloadContractPdf } from '../../../../services/pdf.service';
+import { getUserProfile } from '../../../../services/user.service';
 
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200';
 
@@ -23,13 +22,12 @@ const formatPrice = (price: number) =>
 
 const TenantPropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const { user } = useUser();
 
   const [property, setProperty] = useState<Property | null>(null);
+  const [owner, setOwner] = useState<AppUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isRequesting, setIsRequesting] = useState(false);
-  const [requestError, setRequestError] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -41,47 +39,30 @@ const TenantPropertyDetail = () => {
       try {
         const data = await getPropertyById(id);
 
+        if (!data) {
+          setErrorMessage('No encontramos esta propiedad.');
+          return;
+        }
+
+        if (data.status === 'rented' && data.tenantId !== user.id) {
+          setErrorMessage('Esta propiedad ya no se encuentra disponible.');
+          return;
+        }
+
+        const ownerData = await getUserProfile(data.ownerId);
+
         setProperty(data);
+        setOwner(ownerData);
       } catch (error) {
         console.error('Error obteniendo propiedad:', error);
+        setErrorMessage('No pudimos cargar la propiedad. Intentá nuevamente.');
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchProperty();
-  }, [id]);
-
-  const handleRequestRental = async () => {
-    if (!property || !user) {
-      setRequestError('No pudimos identificar tu cuenta para generar el contrato.');
-      return;
-    }
-
-    setRequestError('');
-    setIsRequesting(true);
-
-    try {
-      const contract = await createRentalContract({
-        propertyId: property.id,
-        tenant: user,
-      });
-
-      downloadContractPdf(contract);
-
-      navigate(ROUTES.TENANT_CONTRACTS);
-    } catch (error) {
-      console.error('Error solicitando alquiler:', error);
-
-      setRequestError(
-        error instanceof Error
-          ? error.message
-          : 'No pudimos generar el contrato. Intentá nuevamente.',
-      );
-    } finally {
-      setIsRequesting(false);
-    }
-  };
+  }, [id, user.id]);
 
   if (isLoading) {
     return <p className="text-sm text-muted-foreground">Cargando propiedad...</p>;
@@ -90,7 +71,9 @@ const TenantPropertyDetail = () => {
   if (!property) {
     return (
       <div className="space-y-4">
-        <p className="text-sm text-muted-foreground">No encontramos esta propiedad.</p>
+        <p className="text-sm text-muted-foreground">
+          {errorMessage || 'No encontramos esta propiedad.'}
+        </p>
 
         <Link
           to={ROUTES.TENANT_EXPLORE}
@@ -194,47 +177,68 @@ const TenantPropertyDetail = () => {
         </div>
 
         <div>
+          <Card title="Propietario">
+            {owner ? (
+              <Link
+                to={`/tenant/properties/${property.id}/owner`}
+                className="group flex items-center gap-3 rounded-xl p-2 transition hover:bg-accent"
+              >
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
+                  <UserRound className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-primary group-hover:underline">
+                    {owner.firstName} {owner.lastName}
+                  </p>
+                  <p className="truncate text-xs text-muted-foreground">{owner.email}</p>
+                </div>
+              </Link>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                No pudimos cargar los datos del propietario.
+              </p>
+            )}
+          </Card>
+        </div>
+
+        <div>
           <Card title="Alquiler mensual">
             <p className="text-2xl font-semibold">{formatPrice(property.price)}</p>
 
-            {requestError && (
-              <p className="mt-3 text-xs text-destructive" role="alert">
-                {requestError}
-              </p>
+            {disponible ? (
+              <Link
+                to={`/tenant/properties/${property.id}/apply`}
+                className="
+                  mt-5
+                  flex
+                  w-full
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-lg
+                  bg-primary
+                  px-4
+                  py-2
+                  text-sm
+                  font-medium
+                  text-primary-foreground
+                  transition
+                  hover:opacity-90
+                "
+              >
+                <Wallet className="h-4 w-4" />
+                Solicitar alquiler
+              </Link>
+            ) : (
+              <button
+                type="button"
+                disabled
+                className="mt-5 flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground opacity-60"
+              >
+                <Wallet className="h-4 w-4" />
+                No disponible
+              </button>
             )}
-
-            <button
-              type="button"
-              disabled={!disponible || isRequesting}
-              onClick={handleRequestRental}
-              className="
-                mt-5
-                flex
-                w-full
-                items-center
-                justify-center
-                gap-2
-                rounded-lg
-                bg-primary
-                px-4
-                py-2
-                text-sm
-                font-medium
-                text-primary-foreground
-                transition
-                hover:opacity-90
-                disabled:cursor-not-allowed
-                disabled:opacity-60
-              "
-            >
-              <Wallet className="h-4 w-4" />
-
-              {isRequesting
-                ? 'Generando contrato...'
-                : disponible
-                  ? 'Solicitar alquiler'
-                  : 'No disponible'}
-            </button>
           </Card>
         </div>
       </div>

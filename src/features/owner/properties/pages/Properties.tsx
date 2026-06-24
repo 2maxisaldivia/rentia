@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin } from 'lucide-react';
+import { MapPin, Plus } from 'lucide-react';
 
 import PageHeader from '../../dashboard/pages/components/PageHeader';
 import StatusPill from '../../dashboard/pages/components/StatusPill';
@@ -49,17 +49,21 @@ const Properties = () => {
           <Link
             to={ROUTES.OWNER_PROPERTY_CREATE}
             className="
-      rounded-md
-      bg-primary
-      px-4
-      py-2
-      text-sm
-      font-medium
-      text-primary-foreground
-      transition
-      hover:opacity-90
-    "
+              flex
+              items-center
+              gap-2
+              rounded-lg
+              bg-primary
+              px-4
+              py-2
+              text-sm
+              font-medium
+              text-primary-foreground
+              transition
+              hover:opacity-90
+            "
           >
+            <Plus className="h-4 w-4" />
             Agregar propiedad
           </Link>
         }

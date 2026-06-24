@@ -23,9 +23,9 @@ const Incomes = ({ projection, activeContracts }: IncomesProps) => {
   const currentMonthIncome = projection[0]?.value ?? 0;
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 shadow-soft lg:col-span-2">
-      <div className="flex items-start justify-between gap-4">
-        <div>
+    <div className="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-soft sm:p-6 lg:col-span-2">
+      <div className="flex flex-col items-start gap-3 sm:flex-row sm:justify-between sm:gap-4">
+        <div className="min-w-0">
           <h2 className="font-semibold">Ingreso mensual estimado</h2>
 
           <p className="text-xs text-muted-foreground">Proyección de los próximos 6 meses</p>
@@ -34,6 +34,7 @@ const Incomes = ({ projection, activeContracts }: IncomesProps) => {
         <span
           className="
             inline-flex
+            shrink-0
             items-center
             gap-1
             text-sm
@@ -47,7 +48,9 @@ const Incomes = ({ projection, activeContracts }: IncomesProps) => {
       </div>
 
       <div className="mt-5">
-        <p className="text-2xl font-semibold tracking-tight">{formatPrice(currentMonthIncome)}</p>
+        <p className="break-words text-xl font-semibold tracking-tight sm:text-2xl">
+          {formatPrice(currentMonthIncome)}
+        </p>
 
         <p className="mt-1 text-xs text-muted-foreground">
           Estimado para {projection[0]?.label ?? 'este mes'}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Download } from 'lucide-react';
 
 import StatusPill from '../../dashboard/pages/components/StatusPill';
@@ -19,6 +19,7 @@ const Contracts = () => {
   const [selectedContractId, setSelectedContractId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const timelineRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchContracts = async () => {
@@ -46,6 +47,14 @@ const Contracts = () => {
   const selectedContract =
     contracts.find((contract) => contract.id === selectedContractId) ?? contracts[0];
 
+  const handleViewTimeline = (contractId: string) => {
+    setSelectedContractId(contractId);
+
+    window.requestAnimationFrame(() => {
+      timelineRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
+
   return (
     <>
       <PageHeader
@@ -67,10 +76,85 @@ const Contracts = () => {
           </p>
         </div>
       ) : (
-        <div className="grid gap-6 lg:grid-cols-3">
-          <div className="rounded-2xl border border-border bg-card shadow-soft lg:col-span-2">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+        <div className="grid min-w-0 gap-6 lg:grid-cols-3">
+          <div className="min-w-0 overflow-hidden rounded-2xl border border-border bg-card shadow-soft lg:col-span-2">
+            <div className="divide-y divide-border md:hidden">
+              {contracts.map((contract) => {
+                const isSelected = contract.id === selectedContract?.id;
+
+                return (
+                  <article
+                    key={contract.id}
+                    className={isSelected ? 'bg-secondary/30 p-4' : 'p-4'}
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedContractId(contract.id)}
+                        className="text-left font-medium transition hover:text-primary hover:underline"
+                      >
+                        {getContractCode(contract.id)}
+                      </button>
+
+                      <StatusPill tone="success">Activo</StatusPill>
+                    </div>
+
+                    <dl className="mt-4 grid gap-3 text-sm">
+                      <div>
+                        <dt className="text-xs text-muted-foreground">Propiedad</dt>
+                        <dd className="break-words font-medium">{contract.property.title}</dd>
+                      </div>
+
+                      <div>
+                        <dt className="text-xs text-muted-foreground">Inquilino</dt>
+                        <dd className="break-words">{contract.tenant.fullName}</dd>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <dt className="text-xs text-muted-foreground">Vigencia</dt>
+                          <dd className="mt-0.5 text-xs">
+                            {formatDate(contract.startDate)}
+                            <span className="block text-muted-foreground">
+                              hasta {formatDate(contract.endDate)}
+                            </span>
+                          </dd>
+                        </div>
+
+                        <div>
+                          <dt className="text-xs text-muted-foreground">Monto</dt>
+                          <dd className="break-words font-medium">
+                            {formatPrice(contract.monthlyAmount)}
+                          </dd>
+                        </div>
+                      </div>
+                    </dl>
+
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleViewTimeline(contract.id)}
+                        className="rounded-md border border-border px-3 py-2 text-sm font-medium transition hover:bg-accent"
+                      >
+                        Ver timeline
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => downloadContractPdf(contract)}
+                        className="inline-flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition hover:bg-accent hover:text-accent-foreground"
+                      >
+                        <Download className="h-3.5 w-3.5" />
+                        Descargar PDF
+                      </button>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+
+            <div className="hidden overflow-x-auto md:block">
+              <table className="min-w-[58rem] w-full text-sm">
                 <thead className="bg-secondary/50 text-xs uppercase tracking-wider text-muted-foreground">
                   <tr>
                     <th className="px-5 py-3 text-left">Contrato</th>
@@ -136,7 +220,11 @@ const Contracts = () => {
             </div>
           </div>
 
-          {selectedContract && <ContractTimeline contract={selectedContract} />}
+          {selectedContract && (
+            <div ref={timelineRef} className="min-w-0 scroll-mt-20">
+              <ContractTimeline contract={selectedContract} />
+            </div>
+          )}
         </div>
       )}
     </>

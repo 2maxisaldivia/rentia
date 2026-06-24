@@ -18,8 +18,8 @@ const MiniBars = ({ data }: MiniBarsProps) => {
   const maxValue = Math.max(...data.map((item) => item.value), 1);
 
   return (
-    <div className="mt-8">
-      <div className="grid h-40 grid-cols-6 items-end gap-3 sm:gap-5">
+    <div className="mt-6 min-w-0 sm:mt-8">
+      <div className="grid h-36 grid-cols-6 items-end gap-2 sm:h-40 sm:gap-5">
         {data.map((item) => {
           const height = item.value > 0 ? Math.max((item.value / maxValue) * 100, 12) : 4;
 
@@ -60,7 +60,9 @@ const MiniBars = ({ data }: MiniBarsProps) => {
                 />
               </div>
 
-              <p className="mt-2 text-center text-xs text-muted-foreground">{item.label}</p>
+              <p className="mt-2 truncate text-center text-[11px] text-muted-foreground sm:text-xs">
+                {item.label}
+              </p>
             </div>
           );
         })}

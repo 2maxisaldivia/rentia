@@ -69,7 +69,7 @@ const UpcomingSection = ({ contracts }: UpcomingSectionProps) => {
     .slice(0, 3);
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 shadow-soft">
+    <div className="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-soft sm:p-6">
       <div>
         <h2 className="font-semibold">Próximos vencimientos</h2>
 
@@ -86,21 +86,35 @@ const UpcomingSection = ({ contracts }: UpcomingSectionProps) => {
             return (
               <li
                 key={contract.id}
-                className="flex items-start gap-3 rounded-xl p-2 transition hover:bg-secondary/60"
+                className="
+                  grid min-w-0
+                  grid-cols-[auto_minmax(0,1fr)]
+                  items-start gap-x-3 gap-y-2
+                  rounded-xl p-2
+                  transition hover:bg-secondary/60
+                  sm:grid-cols-[auto_minmax(0,1fr)_auto]
+                "
               >
-                <span className="grid h-9 w-9 place-items-center rounded-lg bg-secondary text-foreground">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-secondary text-foreground">
                   <Building2 className="h-4 w-4" />
                 </span>
 
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{contract.property.title}</p>
+                  <p className="break-words text-sm font-medium sm:truncate">
+                    {contract.property.title}
+                  </p>
 
-                  <p className="truncate text-xs text-muted-foreground">
+                  <p className="break-words text-xs text-muted-foreground sm:truncate">
                     {contract.tenant.fullName} · {formatPrice(contract.monthlyAmount)}
                   </p>
                 </div>
 
-                <StatusPill tone={expiration.tone}>{expiration.label}</StatusPill>
+                <StatusPill
+                  tone={expiration.tone}
+                  className="col-start-2 justify-self-start sm:col-start-3 sm:row-start-1 sm:justify-self-end"
+                >
+                  {expiration.label}
+                </StatusPill>
               </li>
             );
           })}

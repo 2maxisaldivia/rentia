@@ -23,10 +23,12 @@ export const ContractTimeline = ({ contract }: { contract: Contract }) => {
   ] as const;
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 shadow-soft">
-      <h3 className="font-semibold">Timeline · {getContractCode(contract.id)}</h3>
+    <div className="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-soft sm:p-6">
+      <h3 className="break-words font-semibold">
+        Timeline · {getContractCode(contract.id)}
+      </h3>
 
-      <p className="mt-1 text-xs text-muted-foreground">
+      <p className="mt-1 break-words text-xs text-muted-foreground">
         {contract.property.title} · Inquilino: {contract.tenant.fullName}
       </p>
 

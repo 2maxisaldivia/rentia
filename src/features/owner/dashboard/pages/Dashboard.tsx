@@ -184,7 +184,7 @@ const Dashboard = () => {
             openClaims={DEMO_OPEN_CLAIMS}
           />
 
-          <div className="mt-6 grid gap-6 lg:grid-cols-3">
+          <div className="mt-6 grid min-w-0 gap-6 lg:grid-cols-3">
             <Incomes projection={incomeProjection} activeContracts={activeContracts.length} />
 
             <UpcomingSection contracts={activeContracts} />

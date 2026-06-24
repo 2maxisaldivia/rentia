@@ -9,6 +9,14 @@ import { ROUTES } from '../../../../shared/routes';
 import { createProperty } from '../../../../services/property.service';
 import { toast } from 'sonner';
 
+const MAX_IMAGES = 4;
+
+const getImageUrls = (value: string) =>
+  value
+    .split(/\r?\n|,/)
+    .map((url) => url.trim())
+    .filter(Boolean);
+
 const CreateProperty = () => {
   const navigate = useNavigate();
   const { user } = useUser();
@@ -57,13 +65,15 @@ const CreateProperty = () => {
       return;
     }
 
-    const images = imageUrls
-      .split(/\r?\n|,/)
-      .map((url) => url.trim())
-      .filter(Boolean);
+    const images = getImageUrls(imageUrls);
 
     if (images.length === 0) {
       setErrorMessage('Ingresá al menos una URL de imagen para la propiedad.');
+      return;
+    }
+
+    if (images.length > MAX_IMAGES) {
+      setErrorMessage(`Podés agregar como máximo ${MAX_IMAGES} imágenes por propiedad.`);
       return;
     }
 
@@ -104,6 +114,8 @@ const CreateProperty = () => {
       setIsSubmitting(false);
     }
   };
+
+  const imageCount = getImageUrls(imageUrls).length;
 
   return (
     <>
@@ -237,9 +249,21 @@ const CreateProperty = () => {
         </div>
 
         <div className="mt-5 space-y-2">
-          <label htmlFor="images" className="text-sm font-medium">
-            URLs de imágenes
-          </label>
+          <div className="flex items-center justify-between gap-3">
+            <label htmlFor="images" className="text-sm font-medium">
+              URLs de imágenes
+            </label>
+
+            <span
+              className={
+                imageCount > MAX_IMAGES
+                  ? 'text-xs font-medium text-destructive'
+                  : 'text-xs text-muted-foreground'
+              }
+            >
+              {imageCount}/{MAX_IMAGES} imágenes
+            </span>
+          </div>
 
           <textarea
             id="images"
@@ -247,13 +271,19 @@ const CreateProperty = () => {
             rows={4}
             disabled={isSubmitting}
             value={imageUrls}
-            onChange={(event) => setImageUrls(event.target.value)}
-            placeholder={`Pegá una URL por línea.\nEj. https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200`}
+            onChange={(event) => {
+              setImageUrls(event.target.value);
+
+              if (getImageUrls(event.target.value).length <= MAX_IMAGES) {
+                setErrorMessage('');
+              }
+            }}
+            placeholder={`Pegá hasta ${MAX_IMAGES} URLs, una por línea.\nEj. https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200`}
             className="w-full resize-y rounded-md border border-input bg-background px-3 py-2 text-sm outline-none transition focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
           />
 
           <p className="text-xs text-muted-foreground">
-            La primera URL será la imagen principal de la propiedad.
+            La primera URL será la imagen principal. Podés cargar hasta {MAX_IMAGES} imágenes.
           </p>
         </div>
 

@@ -5,7 +5,7 @@ import { loginUser } from '../../../../../services/auth.service';
 import { getUserProfile } from '../../../../../services/user.service';
 import { ROUTES } from '../../../../../shared/routes';
 
-const LoginForm = ({ handleRecoveryPass }: { handleRecoveryPass: () => void }) => {
+const LoginForm = () => {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -66,15 +66,6 @@ const LoginForm = ({ handleRecoveryPass }: { handleRecoveryPass: () => void }) =
           <label htmlFor="pass" className="text-sm font-medium">
             Contraseña
           </label>
-
-          <button
-            type="button"
-            onClick={handleRecoveryPass}
-            disabled={isLoading}
-            className="text-xs text-primary hover:underline disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            Recuperar
-          </button>
         </div>
 
         <input

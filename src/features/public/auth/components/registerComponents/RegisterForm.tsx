@@ -15,6 +15,7 @@ const RegisterForm = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'owner' | 'tenant'>('tenant');
 
@@ -27,15 +28,22 @@ const RegisterForm = () => {
     const trimmedFirstName = firstName.trim();
     const trimmedLastName = lastName.trim();
     const trimmedEmail = email.trim();
+    const trimmedPhone = phone.trim();
 
     if (
       !trimmedFirstName ||
       !trimmedLastName ||
       !trimmedEmail ||
+      !trimmedPhone ||
       !password.trim() ||
       !role
     ) {
       setErrorMessage('Todos los campos son obligatorios.');
+      return;
+    }
+
+    if (trimmedPhone.replace(/\D/g, '').length < 8) {
+      setErrorMessage('Ingresá un teléfono de contacto válido.');
       return;
     }
 
@@ -55,6 +63,7 @@ const RegisterForm = () => {
         firstName: trimmedFirstName,
         lastName: trimmedLastName,
         email: trimmedEmail,
+        phone: trimmedPhone,
         role,
         createdAt: new Date(),
       });
@@ -115,6 +124,24 @@ const RegisterForm = () => {
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           disabled={isLoading}
+          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
+        />
+      </div>
+
+      <div className="space-y-1.5">
+        <label htmlFor="phone" className="text-sm font-medium">
+          Teléfono de contacto
+        </label>
+
+        <input
+          id="phone"
+          type="tel"
+          required
+          value={phone}
+          onChange={(event) => setPhone(event.target.value)}
+          disabled={isLoading}
+          placeholder="Ej. +54 9 351 555 1234"
+          autoComplete="tel"
           className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
         />
       </div>

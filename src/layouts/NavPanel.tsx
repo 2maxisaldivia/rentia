@@ -6,6 +6,7 @@ import { Logo } from '../shared/components/Logo';
 import { ownerNav, tenantNav } from './utils/constants';
 import { logoutUser } from '../services/auth.service';
 import { useUser } from '../shared/auth/provider/useContextValue';
+import { ROUTES } from '../shared/routes';
 
 const NavPanel = () => {
   const { pathname } = useLocation();
@@ -15,6 +16,8 @@ const NavPanel = () => {
   const navItems = user?.role === 'owner' ? ownerNav : tenantNav;
   const ES_ROLE = user?.role === 'owner' ? 'Propietario' : 'Inquilino';
   const userInitials = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`;
+  const profileRoute =
+    user?.role === 'owner' ? ROUTES.OWNER_PROFILE : ROUTES.TENANT_PROFILE;
 
   useEffect(() => {
     if (!isMobileMenuOpen) {
@@ -89,13 +92,22 @@ const NavPanel = () => {
       </nav>
 
       <div className="shrink-0 border-t border-border pt-3 pb-[env(safe-area-inset-bottom)]">
-        <div
+        <Link
+          to={profileRoute}
+          onClick={onNavigate}
           className="
+            group
             mx-3 mb-3
             flex items-center gap-3
             rounded-xl
             bg-sidebar-accent
             px-3 py-3
+            ring-1 ring-transparent
+            transition
+            hover:-translate-y-0.5
+            hover:bg-accent
+            hover:ring-border
+            hover:shadow-soft
           "
         >
           <div
@@ -107,19 +119,20 @@ const NavPanel = () => {
               text-xs
               font-medium
               text-primary-foreground
+              transition-transform group-hover:scale-105
             "
           >
             {userInitials}
           </div>
 
           <div className="min-w-0">
-            <p className="truncate text-sm font-medium">
+            <p className="truncate text-sm font-medium transition-colors group-hover:text-primary">
               {user?.firstName} {user?.lastName}
             </p>
 
             <p className="text-xs text-muted-foreground">{ES_ROLE}</p>
           </div>
-        </div>
+        </Link>
 
         <button
           type="button"

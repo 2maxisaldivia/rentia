@@ -181,7 +181,10 @@ const RentalApplicationPage = () => {
   const { user } = useUser();
 
   const [property, setProperty] = useState<Property | null>(null);
-  const [application, setApplication] = useState<RentalApplication>(initialApplication);
+  const [application, setApplication] = useState<RentalApplication>(() => ({
+    ...initialApplication(),
+    phone: user.phone || '',
+  }));
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');

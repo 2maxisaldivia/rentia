@@ -259,6 +259,7 @@ const RentalSection = ({
           label="Propietario"
           value={contract.owner.fullName}
           detail={contract.owner.email}
+          href={ROUTES.TENANT_OWNER_DETAIL.replace(':propertyId', contract.propertyId)}
         />
         <InfoCard
           icon={MapPin}
@@ -276,11 +277,13 @@ const InfoCard = ({
   label,
   value,
   detail,
+  href,
 }: {
   icon: LucideIcon;
   label: string;
   value: string;
   detail?: string;
+  href?: string;
 }) => (
   <div className="min-w-0 rounded-2xl border border-border bg-card p-5 shadow-soft">
     <span className="grid h-9 w-9 place-items-center rounded-lg bg-primary-soft text-primary">
@@ -288,7 +291,16 @@ const InfoCard = ({
     </span>
 
     <p className="mt-4 text-xs text-muted-foreground">{label}</p>
-    <p className="mt-1 break-words font-semibold">{value}</p>
+    {href ? (
+      <Link
+        to={href}
+        className="mt-1 block break-words font-semibold text-primary transition hover:underline"
+      >
+        {value}
+      </Link>
+    ) : (
+      <p className="mt-1 break-words font-semibold">{value}</p>
+    )}
     {detail && <p className="mt-1 break-words text-xs text-muted-foreground">{detail}</p>}
   </div>
 );

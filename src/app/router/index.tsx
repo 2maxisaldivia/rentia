@@ -25,6 +25,7 @@ import RentalApplicationPage from '../../features/tenant/rental-application/page
 import OwnerTenantDetail from '../../features/owner/tenant-detail/page/OwnerTenantDetail';
 import TenantOwnerDetail from '../../features/tenant/owner-detail/page/TenantOwnerDetail';
 import TenantDashboard from '../../features/tenant/dashboard/page/TenantDashboard';
+import ProfilePage from '../../features/profile/page/ProfilePage';
 
 export const AppRouter = () => {
   return (
@@ -53,6 +54,7 @@ export const AppRouter = () => {
               <Route path={ROUTES.OWNER_CONTRACTS} element={<Contracts />} />
               <Route path={ROUTES.OWNER_TENANT_DETAIL} element={<OwnerTenantDetail />} />
               <Route path={ROUTES.OWNER_PROPERTY_DETAIL} element={<OwnerPropertyDetail />} />
+              <Route path={ROUTES.OWNER_PROFILE} element={<ProfilePage />} />
             </Route>
           </Route>
 
@@ -66,6 +68,7 @@ export const AppRouter = () => {
               <Route path={ROUTES.TENANT_PROPERTY_DETAIL} element={<TenantPropertyDetail />} />
               <Route path={ROUTES.TENANT_OWNER_DETAIL} element={<TenantOwnerDetail />} />
               <Route path={ROUTES.TENANT_RENTAL_APPLICATION} element={<RentalApplicationPage />} />
+              <Route path={ROUTES.TENANT_PROFILE} element={<ProfilePage />} />
             </Route>
           </Route>
         </Route>

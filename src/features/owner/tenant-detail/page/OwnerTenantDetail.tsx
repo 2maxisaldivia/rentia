@@ -10,15 +10,17 @@ import {
   ShieldCheck,
   UserRound,
 } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 
 import PageHeader from '../../dashboard/pages/components/PageHeader';
 import StatusPill from '../../dashboard/pages/components/StatusPill';
 import { useUser } from '../../../../shared/auth/provider/useContextValue';
 import { ROUTES } from '../../../../shared/routes';
+import type { AppUser } from '../../../../shared/auth/user';
 import type { Contract } from '../../../../shared/types/Contract';
 import { getContractById } from '../../../../services/contract.service';
 import { downloadContractPdf } from '../../../../services/pdf.service';
+import { getUserProfile } from '../../../../services/user.service';
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat('es-AR', {
@@ -88,11 +90,21 @@ const DocumentLink = ({ label, url }: { label: string; url: string }) => (
 
 const OwnerTenantDetail = () => {
   const { contractId } = useParams<{ contractId: string }>();
+  const location = useLocation();
   const { user } = useUser();
 
   const [contract, setContract] = useState<Contract | null>(null);
+  const [tenantProfile, setTenantProfile] = useState<AppUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const navigationState = location.state as
+    | {
+        from?: string;
+        backLabel?: string;
+      }
+    | null;
+  const backRoute = navigationState?.from ?? ROUTES.OWNER_CONTRACTS;
+  const backLabel = navigationState?.backLabel ?? 'Volver a contratos';
 
   useEffect(() => {
     const fetchContract = async () => {
@@ -115,7 +127,10 @@ const OwnerTenantDetail = () => {
           return;
         }
 
+        const profile = await getUserProfile(contractData.tenantId);
+
         setContract(contractData);
+        setTenantProfile(profile);
       } catch (error) {
         console.error('Error obteniendo inquilino:', error);
         setErrorMessage('No pudimos cargar los datos del inquilino. Intentá nuevamente.');
@@ -136,32 +151,37 @@ const OwnerTenantDetail = () => {
       <div className="space-y-4">
         <p className="text-sm text-destructive">{errorMessage}</p>
         <Link
-          to={ROUTES.OWNER_CONTRACTS}
+          to={backRoute}
           className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
         >
           <ArrowLeft className="h-4 w-4" />
-          Volver a contratos
+          {backLabel}
         </Link>
       </div>
     );
   }
 
   const application = contract.rentalApplication;
+  const tenantName = tenantProfile
+    ? `${tenantProfile.firstName} ${tenantProfile.lastName}`
+    : contract.tenant.fullName;
+  const tenantEmail = tenantProfile?.email ?? contract.tenant.email;
+  const tenantPhone = tenantProfile?.phone || application?.phone || 'No informado';
 
   return (
     <>
       <Link
-        to={ROUTES.OWNER_CONTRACTS}
+        to={backRoute}
         className="inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
-        Volver a contratos
+        {backLabel}
       </Link>
 
       <div className="mt-4">
         <PageHeader
-          title="Información del inquilino"
-          description={`Datos asociados al alquiler de ${contract.property.title}.`}
+          title="Perfil del inquilino"
+          description={`Datos personales y documentación asociados al alquiler de ${contract.property.title}.`}
           actions={
             <button
               type="button"
@@ -179,17 +199,31 @@ const OwnerTenantDetail = () => {
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <div className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-primary text-lg font-semibold text-primary-foreground">
-              {getInitials(contract.tenant.fullName)}
+              {getInitials(tenantName)}
             </div>
-            <div>
-              <p className="text-xl font-semibold">{contract.tenant.fullName}</p>
+            <div className="min-w-0">
+              <p className="break-words text-xl font-semibold">{tenantName}</p>
               <a
-                href={`mailto:${contract.tenant.email}`}
+                href={`mailto:${tenantEmail}`}
                 className="mt-1 inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-primary hover:underline"
               >
                 <Mail className="h-4 w-4" />
-                {contract.tenant.email}
+                <span className="break-all">{tenantEmail}</span>
               </a>
+              {tenantPhone !== 'No informado' ? (
+                <a
+                  href={`tel:${tenantPhone}`}
+                  className="mt-1 flex items-center gap-2 text-sm text-muted-foreground transition hover:text-primary hover:underline"
+                >
+                  <Phone className="h-4 w-4" />
+                  {tenantPhone}
+                </a>
+              ) : (
+                <p className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
+                  <Phone className="h-4 w-4" />
+                  No informado
+                </p>
+              )}
             </div>
           </div>
           <StatusPill tone="success">Contrato activo</StatusPill>
@@ -202,10 +236,13 @@ const OwnerTenantDetail = () => {
             <dl className="grid gap-5 sm:grid-cols-2">
               <DetailItem label="DNI" value={application.dni} />
               <DetailItem
-                label="Teléfono"
-                value={application.phone}
+                label="Teléfono de la cuenta"
+                value={tenantPhone}
                 icon={<Phone className="mt-0.5 h-4 w-4 shrink-0 text-primary" />}
               />
+              {application.phone !== tenantPhone && (
+                <DetailItem label="Teléfono informado en la solicitud" value={application.phone} />
+              )}
               <DetailItem label="Estado civil" value={application.maritalStatus} />
               <DetailItem
                 label="Ocupación"

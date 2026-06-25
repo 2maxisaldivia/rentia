@@ -215,6 +215,10 @@ const OwnerPropertyDetail = () => {
               {contract ? (
                 <Link
                   to={`/owner/contracts/${contract.id}/tenant`}
+                  state={{
+                    from: ROUTES.OWNER_PROPERTIES,
+                    backLabel: 'Volver a propiedades',
+                  }}
                   className="group flex items-center gap-3 rounded-xl p-2 transition hover:bg-accent"
                 >
                   <div className="grid h-10 w-10 place-items-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">

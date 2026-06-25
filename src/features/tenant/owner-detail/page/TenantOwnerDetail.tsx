@@ -1,5 +1,13 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Building2, CalendarDays, Mail, MapPin, UserRound } from 'lucide-react';
+import {
+  ArrowLeft,
+  Building2,
+  CalendarDays,
+  Mail,
+  MapPin,
+  Phone,
+  UserRound,
+} from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 
 import PageHeader from '../../../owner/dashboard/pages/components/PageHeader';
@@ -117,8 +125,8 @@ const TenantOwnerDetail = () => {
 
       <div className="mt-4">
         <PageHeader
-          title="Información del propietario"
-          description={`Propietario de ${property.title}.`}
+          title="Perfil del propietario"
+          description={`Datos de contacto del propietario de ${property.title}.`}
         />
       </div>
 
@@ -168,6 +176,24 @@ const TenantOwnerDetail = () => {
                   <Mail className="h-4 w-4 shrink-0" />
                   {owner.email}
                 </a>
+              </dd>
+            </div>
+            <div>
+              <dt className="text-xs text-muted-foreground">Teléfono de contacto</dt>
+              <dd className="mt-1">
+                {owner.phone ? (
+                  <a
+                    href={`tel:${owner.phone}`}
+                    className="inline-flex items-center gap-2 break-all text-sm font-medium text-primary hover:underline"
+                  >
+                    <Phone className="h-4 w-4 shrink-0" />
+                    {owner.phone}
+                  </a>
+                ) : (
+                  <span className="text-sm font-medium text-muted-foreground">
+                    No informado
+                  </span>
+                )}
               </dd>
             </div>
           </dl>

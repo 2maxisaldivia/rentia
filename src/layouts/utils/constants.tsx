@@ -8,6 +8,7 @@ export const ownerNav = [
 ];
 
 export const tenantNav = [
-  { to: `${ROUTES.TENANT_EXPLORE}`, label: 'Explora Propiedades', icon: Building2 },
+  { to: `${ROUTES.TENANT_EXPLORE}`, label: 'Explorar propiedades', icon: Building2 },
+  { to: `${ROUTES.TENANT_RENTAL}`, label: 'Mis alquileres', icon: LayoutDashboard },
   { to: `${ROUTES.TENANT_CONTRACTS}`, label: 'Contratos', icon: FileText },
 ];

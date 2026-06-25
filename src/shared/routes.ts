@@ -11,6 +11,7 @@ export const ROUTES = {
   OWNER_PROPERTY_DETAIL: '/owner/properties/:id',
 
   TENANT_EXPLORE: '/tenant/explore',
+  TENANT_RENTAL: '/tenant/rental',
   TENANT_CONTRACTS: '/tenant/contracts',
   TENANT_PROPERTY_DETAIL: '/tenant/properties/:id',
   TENANT_OWNER_DETAIL: '/tenant/properties/:propertyId/owner',

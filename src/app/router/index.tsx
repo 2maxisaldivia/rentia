@@ -24,6 +24,7 @@ import CreateProperty from '../../features/owner/properties/pages/CreateProperty
 import RentalApplicationPage from '../../features/tenant/rental-application/page/RentalApplicationPage';
 import OwnerTenantDetail from '../../features/owner/tenant-detail/page/OwnerTenantDetail';
 import TenantOwnerDetail from '../../features/tenant/owner-detail/page/TenantOwnerDetail';
+import TenantDashboard from '../../features/tenant/dashboard/page/TenantDashboard';
 
 export const AppRouter = () => {
   return (
@@ -59,6 +60,7 @@ export const AppRouter = () => {
 
           <Route element={<RoleGuard role="tenant" />}>
             <Route element={<TenantLayout />}>
+              <Route path={ROUTES.TENANT_RENTAL} element={<TenantDashboard />} />
               <Route path={ROUTES.TENANT_EXPLORE} element={<ExploreProperties />} />
               <Route path={ROUTES.TENANT_CONTRACTS} element={<TenantContracts />} />
               <Route path={ROUTES.TENANT_PROPERTY_DETAIL} element={<TenantPropertyDetail />} />

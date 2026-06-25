@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Building2, MapPin } from 'lucide-react';
+import { ArrowRight, Building2, CalendarDays, MapPin } from 'lucide-react';
 
 import PageHeader from '../../../owner/dashboard/pages/components/PageHeader';
 import StatusPill from '../../../owner/dashboard/pages/components/StatusPill';
 import { getAvailableProperties, type Property } from '../../../../services/property.service';
 import { ROUTES } from '../../../../shared/routes';
+import { useTenantRentals } from '../../shared/hooks/useTenantRentals';
+
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200';
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat('es-AR', {
@@ -14,9 +17,17 @@ const formatPrice = (price: number) =>
     maximumFractionDigits: 0,
   }).format(price);
 
+const formatDate = (date: string) =>
+  new Intl.DateTimeFormat('es-AR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(new Date(`${date}T12:00:00`));
+
 const ExploreProperties = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { rentals } = useTenantRentals();
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -35,6 +46,59 @@ const ExploreProperties = () => {
         title="Encontrá tu próximo alquiler"
         description="Propiedades publicadas directamente por sus dueños. Sin comisiones, con todo claro desde el primer contacto."
       />
+
+      {rentals.length > 0 && (
+        <section className="mb-6 rounded-2xl border border-primary/20 bg-primary-soft/50 p-4 shadow-soft">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-primary">
+                {rentals.length === 1 ? 'Tu alquiler actual' : 'Tus alquileres actuales'}
+              </p>
+              <h2 className="mt-1 font-semibold">
+                {rentals.length === 1
+                  ? 'Tenés una propiedad alquilada'
+                  : `Tenés ${rentals.length} propiedades alquiladas`}
+              </h2>
+            </div>
+
+            <Link
+              to={ROUTES.TENANT_RENTAL}
+              className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+            >
+              Ver mis alquileres
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+
+          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {rentals.map(({ contract, property: rentedProperty }) => (
+              <Link
+                key={contract.id}
+                to={ROUTES.TENANT_RENTAL}
+                className="group flex min-w-0 items-center gap-3 rounded-xl border border-border/70 bg-background/80 p-3 transition hover:border-primary/30"
+              >
+                <img
+                  src={rentedProperty?.images?.[0] ?? FALLBACK_IMAGE}
+                  alt={contract.property.title}
+                  className="h-16 w-16 shrink-0 rounded-lg bg-muted object-cover"
+                />
+
+                <div className="min-w-0 flex-1">
+                  <h3 className="truncate text-sm font-semibold">{contract.property.title}</h3>
+                  <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+                    <MapPin className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{contract.property.location}</span>
+                  </p>
+                  <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+                    <CalendarDays className="h-3.5 w-3.5 shrink-0" />
+                    Hasta {formatDate(contract.endDate)}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Cargando propiedades...</p>

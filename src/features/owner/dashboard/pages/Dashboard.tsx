@@ -21,7 +21,7 @@ type IncomePoint = {
   value: number;
 };
 
-const DEMO_OPEN_CLAIMS = 4;
+const DEMO_OPEN_CLAIMS = 0;
 
 const getLocalIsoDate = (date: Date) => {
   const year = date.getFullYear();

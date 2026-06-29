@@ -51,7 +51,7 @@ const StatsSection = ({
     {
       label: 'Reclamos abiertos',
       value: openClaims,
-      delta: '1 urgente',
+      delta: 'Sin reclamos urgentes',
       tone: 'warning' as const,
       icon: Wrench,
     },
